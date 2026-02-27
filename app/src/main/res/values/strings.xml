@@ -1,0 +1,53 @@
+<resources>
+    <!-- App name -->
+    <string name="app_name">EV Access Try4</string>
+
+    <!-- General UI -->
+    <string name="search_hint">Search by name, address or ID</string>
+    <string name="clear">Clear</string>
+    <string name="no_chargers_found">No chargers found</string>
+    <string name="open_map">Open map</string>
+    <string name="filter_desc">Filter options</string>
+
+    <!-- Charger filters -->
+    <string-array name="charger_filters">
+        <item>All</item>
+        <item>Available</item>
+        <item>Occupied</item>
+        <item>Fast Charger</item>
+        <item>Level 2</item>
+    </string-array>
+
+    <!-- Filter chips -->
+    <string name="chip_available">Available</string>
+    <string name="chip_fast">Fast Charger</string>
+    <string name="chip_cheap">Lowest Price</string>
+
+    <!-- Placeholder data -->
+    <string name="placeholder_home_a">Home A</string>
+    <string name="placeholder_distance">0.8 km</string>
+    <string name="placeholder_some_address">Some address</string>
+    <string name="placeholder_available">Available</string>
+    <string name="placeholder_price">RM 0.50/kWh</string>
+    <string name="map_placeholder_no_chargers">No chargers passed</string>
+    <string name="map_placeholder_title">Map placeholder</string>
+
+    <!-- Home fragment strings -->
+    <string name="label_balance">Balance</string>
+    <string name="sample_balance">RM 120.50</string>
+    <string name="nearest_home_chargers">Nearest Home Chargers</string>
+    <string name="view_more">View more</string>
+    <string name="qr_scan_desc">QR Scan</string>
+    <string name="camera_permission_required">Camera permission is required to scan QR codes</string>
+
+    <!-- Profile fragment strings -->
+    <string name="profile_title">Profile</string>
+    <string name="role_driver">Driver</string>
+    <string name="role_host">Host</string>
+    <string name="driver_dashboard_placeholder">Driver dashboard will appear here</string>
+    <string name="host_profit">Total Profit: RM 120.00</string>
+    <string name="host_history">History: 10 sessions</string>
+
+    <!-- Home chargers screen -->
+    <string name="title_all_home_chargers">All Home Chargers</string>
+</resources>
