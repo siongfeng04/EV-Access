@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature
         android:name="android.hardware.camera"
         android:required="true" />
@@ -16,6 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EVAccessTry4">
+        <activity
+            android:name=".ManageServicesActivity"
+            android:exported="false" />
         <!-- Placeholder maps API key: replace with your real key in production -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -36,10 +40,18 @@
         <activity
             android:name=".MainActivity"
             android:exported="true" />
-        <activity android:name=".ViewMoreActivity" android:exported="false" />
-        <activity android:name=".ChargerDetailActivity" android:exported="false" />
-        <activity android:name=".StartSessionActivity" android:exported="false" />
-        <activity android:name=".PaymentActivity" android:exported="false" />
+        <activity
+            android:name=".ViewMoreActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ChargerDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".StartSessionActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PaymentActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

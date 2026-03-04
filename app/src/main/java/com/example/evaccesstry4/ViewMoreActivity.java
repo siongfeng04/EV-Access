@@ -116,7 +116,7 @@ public class ViewMoreActivity extends AppCompatActivity {
         } else {
             for (Charger charger : chargerList) {
 
-                if (charger.name.toLowerCase()
+                if (charger.getName().toLowerCase()
                         .contains(text.toLowerCase())) {
 
                     filteredList.add(charger);
