@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -43,6 +44,11 @@ dependencies {
     implementation("com.google.zxing:core:3.4.1")
     // Google Maps
     implementation("com.google.android.gms:play-services-maps:18.1.0")
+    implementation(libs.firebase.auth)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services.auth)
+    implementation(libs.googleid)
+    implementation(libs.firebase.firestore)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

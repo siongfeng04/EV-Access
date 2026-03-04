@@ -1,22 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/register_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:padding="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageViewLogoRegister"
+            android:layout_width="wrap_content"
+            android:layout_height="95dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="16dp"
+            android:adjustViewBounds="true"
+            app:srcCompat="@drawable/logo_ev_access" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Register"
-            android:textSize="24sp"
             android:layout_gravity="center_horizontal"
-            android:paddingBottom="16dp" />
+            android:paddingBottom="16dp"
+            android:text="Register"
+            android:textSize="24sp" />
+
+        <EditText
+            android:id="@+id/editRegName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Name"
+            android:inputType="text" />
 
         <EditText
             android:id="@+id/editRegEmail"
@@ -29,30 +49,30 @@
             android:id="@+id/editRegPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Password"
-            android:inputType="textPassword"
-            android:layout_marginTop="8dp" />
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/editRegConfirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:hint="Confirm Password"
-            android:inputType="textPassword"
-            android:layout_marginTop="8dp" />
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/btnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Create account"
-            android:layout_marginTop="16dp" />
+            android:layout_marginTop="16dp"
+            android:text="Create account" />
 
         <Button
             android:id="@+id/btnBackToLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Back to Login"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="8dp"
+            android:text="Back to Login" />
     </LinearLayout>
 </ScrollView>

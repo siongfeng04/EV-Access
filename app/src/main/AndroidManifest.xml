@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +19,7 @@
         <!-- Placeholder maps API key: replace with your real key in production -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="YOUR_MAPS_API_KEY_HERE" />
+            android:value="AIzaSyCzgP6Y305WzuknGzSy4UExq55ScC5uoZ0" />
 
         <activity
             android:name=".RegisterActivity"

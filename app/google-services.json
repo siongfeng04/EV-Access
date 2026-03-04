@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243589435311",
+    "project_id": "ev-access-try4",
+    "storage_bucket": "ev-access-try4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243589435311:android:a11820e443eb81edad695a",
+        "android_client_info": {
+          "package_name": "com.example.evaccesstry4"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC34frEO6_aGw78UVBzXY-JO4yA_Am_9gs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
