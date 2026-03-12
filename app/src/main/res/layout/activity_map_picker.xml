@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:map="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Google Map -->
+    <fragment
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!-- Search Bar -->
+    <SearchView
+        android:id="@+id/search_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="12dp"
+        android:queryHint="Search location"
+        android:background="@android:color/white"/>
+
+    <!-- Center Pin -->
+    <ImageView
+        android:id="@+id/center_pin"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:src="@android:drawable/ic_menu_mylocation"/>
+
+    <!-- Current Location Button -->
+    <ImageButton
+        android:id="@+id/btn_my_location"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="90dp"
+        android:background="@android:color/white"
+        android:src="@android:drawable/ic_menu_mylocation"/>
+
+    <!-- Confirm Button -->
+    <Button
+        android:id="@+id/btn_confirm_location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirm Charger Location"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp"
+        android:backgroundTint="#4CAF50"
+        android:textColor="#FFFFFF"/>
+
+</FrameLayout>

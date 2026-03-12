@@ -19,7 +19,7 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="16dp">
 
-            <!-- QR scan button for driver -->
+            <!-- QR scan button -->
             <ImageButton
                 android:id="@+id/btn_qr_scan"
                 android:layout_width="64dp"
@@ -30,26 +30,27 @@
                 android:scaleType="centerInside"
                 android:background="?attr/selectableItemBackgroundBorderless" />
 
-            <!-- CRUD button for host -->
+            <!-- Host manage services -->
             <ImageButton
                 android:id="@+id/btn_manage_services"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:contentDescription="Manage Services"
-                android:src="@drawable/logo_ev_access"
-                android:backgroundTint="@color/black"
-                android:scaleType="centerInside"
+                android:layout_width="28dp"
+                android:layout_height="32dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
+                android:backgroundTint="@color/black"
+                android:contentDescription="Manage Services"
+                android:scaleType="centerInside"
+                android:src="@drawable/outline_add_location_alt_24"
                 android:visibility="gone" />
 
+            <!-- Balance Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                app:cardCornerRadius="8dp"
-                app:cardElevation="4dp"
                 android:layout_weight="1"
-                android:padding="12dp">
+                android:padding="12dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="4dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -79,7 +80,118 @@
         </LinearLayout>
 
 
-        <!-- Driver Section: Nearest Home Chargers -->
+        <!-- CATEGORY SECTION -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Browse Chargers"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp" />
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="4"
+            android:layout_marginBottom="16dp">
+
+            <!-- HOME -->
+            <LinearLayout
+                android:id="@+id/cat_home"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_home" />
+
+                <TextView
+                    android:text="Home"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+            </LinearLayout>
+
+            <!-- MALL -->
+            <LinearLayout
+                android:id="@+id/cat_mall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/outline_local_mall_24" />
+
+                <TextView
+                    android:text="Mall"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+            </LinearLayout>
+
+            <!-- AIRBNB -->
+            <LinearLayout
+                android:id="@+id/cat_airbnb"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/airbnb" />
+
+                <TextView
+                    android:text="Airbnb"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+            </LinearLayout>
+
+            <!-- OFFICE -->
+            <LinearLayout
+                android:id="@+id/cat_office"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="8dp">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/office_building" />
+
+                <TextView
+                    android:text="Office"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"/>
+            </LinearLayout>
+
+        </GridLayout>
+
+
+        <!-- Driver Section -->
 
         <LinearLayout
             android:id="@+id/layout_driver_section"
@@ -125,6 +237,7 @@
 
         </LinearLayout>
 
+
         <!-- Host Section: Services + Dashboard -->
 
         <LinearLayout
@@ -134,7 +247,7 @@
             android:orientation="vertical"
             android:visibility="gone">
 
-            <!-- Host Services Horizontal RecyclerView -->
+            <!-- Host Services -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -154,7 +267,7 @@
                 android:paddingBottom="8dp"
                 android:scrollbars="horizontal" />
 
-            <!-- Host Dashboard Cards -->
+            <!-- Dashboard -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -170,14 +283,15 @@
                 android:orientation="horizontal"
                 android:weightSum="3">
 
+                <!-- Week -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
+                    android:padding="12dp"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    android:padding="12dp">
+                    app:cardElevation="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -190,25 +304,26 @@
                             android:layout_height="wrap_content"
                             android:text="RM 0.00"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="This Week"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"/>
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Month -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
+                    android:padding="12dp"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    android:padding="12dp">
+                    app:cardElevation="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -221,24 +336,25 @@
                             android:layout_height="wrap_content"
                             android:text="RM 0.00"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="This Month"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"/>
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Year -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:padding="12dp"
                     app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    android:padding="12dp">
+                    app:cardElevation="4dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -251,19 +367,21 @@
                             android:layout_height="wrap_content"
                             android:text="RM 0.00"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"/>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="This Year"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"/>
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
+
 </ScrollView>

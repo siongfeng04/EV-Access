@@ -6,19 +6,33 @@
     android:layout_height="match_parent"
     android:background="#F5F7FA">
 
-    <!-- 🔎 Search Bar -->
+    <!-- Page Title -->
+    <TextView
+        android:id="@+id/text_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Chargers"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Search Bar -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/searchLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:hint="@string/search_hint"
+        android:hint="Search chargers..."
         app:startIconDrawable="@android:drawable/ic_menu_search"
         app:boxBackgroundMode="outline"
         app:boxCornerRadiusTopStart="16dp"
         app:boxCornerRadiusTopEnd="16dp"
         app:boxCornerRadiusBottomStart="16dp"
         app:boxCornerRadiusBottomEnd="16dp"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/text_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/filterBtn"
         android:layout_margin="16dp">
@@ -32,14 +46,14 @@
             android:imeOptions="actionSearch"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- ⚙️ Filter Button -->
+    <!-- Filter Button -->
     <ImageButton
         android:id="@+id/filterBtn"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:src="@android:drawable/ic_menu_manage"
         android:background="@android:color/transparent"
-        android:contentDescription="@string/filter_desc"
+        android:contentDescription="Filter"
         android:tint="@android:color/black"
         android:clickable="true"
         android:focusable="true"
@@ -49,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="16dp"/>
 
-    <!-- 🏷️ Filter Chips in Horizontal Scroll -->
+    <!-- Filter Chips -->
     <HorizontalScrollView
         android:id="@+id/horizontalScrollView"
         android:layout_width="0dp"
@@ -72,26 +86,25 @@
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/chip_available"/>
+                android:text="Available"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipFast"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/chip_fast"/>
+                android:text="Fast Charger"/>
 
             <com.google.android.material.chip.Chip
                 android:id="@+id/chipCheap"
                 style="@style/Widget.MaterialComponents.Chip.Filter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/chip_cheap"/>
-
+                android:text="Lower Price"/>
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
-    <!-- 📋 RecyclerView -->
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/stationRecyclerView"
         android:layout_width="0dp"
@@ -101,5 +114,4 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

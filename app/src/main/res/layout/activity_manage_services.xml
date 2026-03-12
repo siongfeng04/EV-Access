@@ -1,20 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
+    android:fillViewport="true"
     android:padding="16dp">
 
-    <Button
-        android:id="@+id/btn_add_service"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add New Service" />
+        android:orientation="vertical">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_host_services"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp" />
+        <!-- Charger Name -->
+        <EditText
+            android:id="@+id/input_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Charger Name"
+            android:inputType="text"/>
 
-</LinearLayout>
+        <!-- Distance -->
+        <EditText
+            android:id="@+id/input_distance"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Distance (e.g. 0.5 km)"
+            android:layout_marginTop="12dp"
+            android:inputType="text"/>
+
+        <!-- Price -->
+        <EditText
+            android:id="@+id/input_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Price (e.g. RM 0.50/kWh)"
+            android:layout_marginTop="12dp"
+            android:inputType="text"/>
+
+        <!-- Category Spinner -->
+        <Spinner
+            android:id="@+id/spinner_category"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"/>
+
+        <!-- Fast Charger Switch -->
+        <Switch
+            android:id="@+id/switch_fast_charger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Fast Charger"
+            android:layout_marginTop="12dp"/>
+
+        <!-- Location Section Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Charger Location"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginTop="20dp"/>
+
+        <!-- Select Location Button -->
+        <Button
+            android:id="@+id/btn_select_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select Location on Map"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Selected Location Text -->
+        <TextView
+            android:id="@+id/txt_selected_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No location selected"
+            android:textColor="#666"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Image Preview -->
+        <ImageView
+            android:id="@+id/img_preview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="20dp"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_gallery"/>
+
+        <!-- Upload Image -->
+        <Button
+            android:id="@+id/btn_upload_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Upload Charger Image"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Save Service -->
+        <Button
+            android:id="@+id/btn_save_service"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Save Charger Service"
+            android:layout_marginTop="20dp"/>
+
+    </LinearLayout>
+
+</ScrollView>

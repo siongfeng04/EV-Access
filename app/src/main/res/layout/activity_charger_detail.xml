@@ -1,70 +1,98 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:map="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/detail_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Charger Name"
-        android:textSize="18sp"
-        android:textStyle="bold" />
-
-    <TextView
-        android:id="@+id/detail_distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Distance"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/detail_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Price"
-        android:layout_marginTop="4dp" />
-
-    <TextView
-        android:id="@+id/detail_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Status: Available"
-        android:textColor="@color/black"
-        android:layout_marginTop="8dp" />
-
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
-        android:layout_width="match_parent"
-        android:layout_height="200dp"
-        android:layout_marginTop="12dp" />
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginTop="16dp">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <Button
-            android:id="@+id/btn_start_session"
-            android:layout_width="0dp"
+        <!-- Charger Name -->
+        <TextView
+            android:id="@+id/detail_name"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start Session"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp" />
+            android:text="Charger Name"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
 
-        <Button
-            android:id="@+id/btn_pay"
-            android:layout_width="0dp"
+        <!-- Distance -->
+        <TextView
+            android:id="@+id/detail_distance"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pay"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp" />
+            android:text="Distance"
+            android:textSize="14sp"
+            android:layout_marginTop="6dp"/>
+
+        <!-- Price -->
+        <TextView
+            android:id="@+id/detail_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Price"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
+        <!-- Status -->
+        <TextView
+            android:id="@+id/detail_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Available"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#2E7D32"
+            android:layout_marginTop="8dp"/>
+
+        <!-- Map -->
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="220dp"
+            android:layout_marginTop="14dp"/>
+
+        <!-- Booking Button -->
+        <Button
+            android:id="@+id/btn_book"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Book Charger"
+            android:textAllCaps="false"
+            android:layout_marginTop="16dp"/>
+
+        <!-- Start Session + Pay -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="12dp">
+
+            <Button
+                android:id="@+id/btn_start_session"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Start Session"
+                android:textAllCaps="false"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"/>
+
+            <Button
+                android:id="@+id/btn_pay"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Pay"
+                android:textAllCaps="false"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"/>
+
+        </LinearLayout>
 
     </LinearLayout>
 
-</LinearLayout>
+</ScrollView>

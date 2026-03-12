@@ -2,43 +2,42 @@ package com.example.evaccesstry4;
 
 public class Charger {
 
-    private String id;        // for Firestore doc ID
+    private String id;
     private String name;
-    private String distance;
     private String price;
     private double lat;
     private double lng;
+    private String imageUrl;
+    private boolean fastCharger;
+    private String category;
+    private String hostId;
 
-    // Empty constructor required for Firestore
+    // distance calculated locally (not from Firestore)
+    private double distance = -1;
+
     public Charger() {}
 
-    // Constructor
-    public Charger(String name, String distance, String price, double lat, double lng) {
-        this.name = name;
-        this.distance = distance;
-        this.price = price;
-        this.lat = lat;
-        this.lng = lng;
-    }
-
-    // -------------------
-    // Getter methods
-    // -------------------
+    // Getters
     public String getId() { return id; }
     public String getName() { return name; }
-    public String getDistance() { return distance; }
     public String getPrice() { return price; }
     public double getLat() { return lat; }
     public double getLng() { return lng; }
+    public String getImageUrl() { return imageUrl; }
+    public boolean isFastCharger() { return fastCharger; }
+    public String getCategory() { return category; }
+    public String getHostId() { return hostId; }
+    public double getDistance() { return distance; }
 
-    // -------------------
-    // Setter methods
-    // -------------------
+    // Setters
     public void setId(String id) { this.id = id; }
     public void setName(String name) { this.name = name; }
-    public void setDistance(String distance) { this.distance = distance; }
     public void setPrice(String price) { this.price = price; }
     public void setLat(double lat) { this.lat = lat; }
     public void setLng(double lng) { this.lng = lng; }
-
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
+    public void setFastCharger(boolean fastCharger) { this.fastCharger = fastCharger; }
+    public void setCategory(String category) { this.category = category; }
+    public void setHostId(String hostId) { this.hostId = hostId; }
+    public void setDistance(double distance) { this.distance = distance; }
 }

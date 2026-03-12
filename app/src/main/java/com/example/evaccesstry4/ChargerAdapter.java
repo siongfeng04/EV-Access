@@ -11,16 +11,29 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
+import java.util.Locale;
 
 public class ChargerAdapter extends RecyclerView.Adapter<ChargerAdapter.VH> {
 
     private final List<Charger> items;
     private final Context context;
 
+    private double userLat;
+    private double userLng;
+
     public ChargerAdapter(Context context, List<Charger> items) {
         this.context = context;
         this.items = items;
+    }
+
+    public ChargerAdapter(Context context, List<Charger> items, double userLat, double userLng) {
+        this.context = context;
+        this.items = items;
+        this.userLat = userLat;
+        this.userLng = userLng;
     }
 
     @NonNull
@@ -32,18 +45,39 @@ public class ChargerAdapter extends RecyclerView.Adapter<ChargerAdapter.VH> {
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
+
         Charger c = items.get(position);
+
         holder.name.setText(c.getName());
-        holder.distance.setText(c.getDistance());
         holder.price.setText(c.getPrice());
-        holder.thumbnail.setImageResource(android.R.drawable.ic_menu_compass);
+
+        // show distance
+        if (c.getDistance() >= 0) {
+            holder.distance.setText(
+                    String.format(Locale.getDefault(), "%.2f km", c.getDistance())
+            );
+        } else {
+            holder.distance.setText("N/A");
+        }
+
+        Glide.with(context)
+                .load(c.getImageUrl())
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .into(holder.thumbnail);
+
         holder.itemView.setOnClickListener(v -> {
+
             Intent i = new Intent(context, ChargerDetailActivity.class);
+
             i.putExtra(ChargerDetailActivity.EXTRA_NAME, c.getName());
-            i.putExtra(ChargerDetailActivity.EXTRA_DISTANCE, c.getDistance());
+            i.putExtra(
+                    ChargerDetailActivity.EXTRA_DISTANCE,
+                    String.format(Locale.getDefault(), "%.2f km", c.getDistance())
+            );
             i.putExtra(ChargerDetailActivity.EXTRA_PRICE, c.getPrice());
             i.putExtra("extra_lat", c.getLat());
             i.putExtra("extra_lng", c.getLng());
+
             context.startActivity(i);
         });
     }
@@ -54,11 +88,13 @@ public class ChargerAdapter extends RecyclerView.Adapter<ChargerAdapter.VH> {
     }
 
     static class VH extends RecyclerView.ViewHolder {
+
         TextView name, distance, price;
         ImageView thumbnail;
 
         public VH(@NonNull View itemView) {
             super(itemView);
+
             name = itemView.findViewById(R.id.charger_name);
             distance = itemView.findViewById(R.id.charger_distance);
             price = itemView.findViewById(R.id.charger_price);

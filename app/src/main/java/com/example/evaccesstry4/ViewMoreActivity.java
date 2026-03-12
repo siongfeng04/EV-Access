@@ -1,16 +1,29 @@
 package com.example.evaccesstry4;
 
+import android.Manifest;
+import android.location.Location;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.content.pm.PackageManager;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class ViewMoreActivity extends AppCompatActivity {
@@ -18,111 +31,141 @@ public class ViewMoreActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ChargerAdapter adapter;
 
-    private List<Charger> chargerList;      // original data
-    private List<Charger> filteredList;     // filtered results
+    private List<Charger> chargerList;
+    private List<Charger> filteredList;
 
     private TextInputEditText searchEditText;
+    private Chip chipCheap, chipFast;
+
+    private FirebaseFirestore db;
+    private FusedLocationProviderClient fusedLocationClient;
+    private double userLat = 0;
+    private double userLng = 0;
+
+    private String category = "all";
+    private String title = "All Chargers";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_more);
 
-        // 🔍 Search bar
-        searchEditText = findViewById(R.id.searchEditText);
+        if (getIntent() != null) {
+            String cat = getIntent().getStringExtra("category");
+            String t = getIntent().getStringExtra("title");
+            if (cat != null) category = cat;
+            if (t != null) title = t;
+        }
 
-        // 📋 RecyclerView
+        setTitle(title);
+
+        db = FirebaseFirestore.getInstance();
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        searchEditText = findViewById(R.id.searchEditText);
         recyclerView = findViewById(R.id.stationRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // 📦 Initialize lists
+        chipCheap = findViewById(R.id.chipCheap);
+        chipFast = findViewById(R.id.chipFast);
+
         chargerList = new ArrayList<>();
         filteredList = new ArrayList<>();
 
-        // ⚡ Sample chargers (replace with Firebase later)
-        loadSampleData();
-
-        // 🔗 Adapter uses filtered list
         adapter = new ChargerAdapter(this, filteredList);
         recyclerView.setAdapter(adapter);
 
-        // 🔍 Enable search filtering
-        setupSearch();
-    }
-
-    // ===============================
-    // 🔋 Sample Data
-    // ===============================
-    private void loadSampleData() {
-
-        chargerList.add(new Charger(
-                "Home Charger - Ahmad",
-                "2.3 km away",
-                "RM 0.80 / kWh",
-                4.5975, 114.0769
-        ));
-
-        chargerList.add(new Charger(
-                "Fast DC Station",
-                "1.1 km away",
-                "RM 1.20 / kWh",
-                4.5990, 114.0780
-        ));
-
-        chargerList.add(new Charger(
-                "Condo Charger",
-                "3.8 km away",
-                "RM 0.65 / kWh",
-                4.5932, 114.0721
-        ));
-
-        chargerList.add(new Charger(
-                "Mall Charging Hub",
-                "5.0 km away",
-                "RM 1.00 / kWh",
-                4.6021, 114.0825
-        ));
-
-        // initially show all items
-        filteredList.addAll(chargerList);
-    }
-
-    // ===============================
-    // 🔎 Search Logic
-    // ===============================
-    private void setupSearch() {
+        getUserLocation();
 
         searchEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                filter(s.toString());
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {}
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) { applyFilters(); }
+            @Override public void afterTextChanged(Editable s) {}
         });
+
+        chipCheap.setOnClickListener(v -> applyFilters());
+        chipFast.setOnClickListener(v -> applyFilters());
     }
 
-    private void filter(String text) {
+    private void getUserLocation() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this, "Location permission required", Toast.LENGTH_SHORT).show();
+            loadChargersFromFirestore();
+            return;
+        }
+
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        userLat = location.getLatitude();
+                        userLng = location.getLongitude();
+                    }
+                    loadChargersFromFirestore();
+                })
+                .addOnFailureListener(e -> loadChargersFromFirestore());
+    }
+
+    private void loadChargersFromFirestore() {
+        db.collection("services")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    chargerList.clear();
+
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        Charger charger = doc.toObject(Charger.class);
+                        if (charger != null &&
+                                ("all".equalsIgnoreCase(category) ||
+                                        category.equalsIgnoreCase(charger.getCategory()))) {
+
+                            // 🔹 Calculate distance from user
+                            float[] results = new float[1];
+                            Location.distanceBetween(userLat, userLng,
+                                    charger.getLat(), charger.getLng(), results);
+                            double distanceKm = results[0] / 1000f;
+                            charger.setDistance(distanceKm);
+
+                            chargerList.add(charger);
+
+                        }
+                    }
+
+                    applyFilters();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this,
+                        "Failed to load chargers", Toast.LENGTH_SHORT).show());
+    }
+
+    private void applyFilters() {
+        String searchText = searchEditText.getText().toString().trim().toLowerCase();
+        boolean filterCheap = chipCheap.isChecked();
+        boolean filterFast = chipFast.isChecked();
 
         filteredList.clear();
 
-        if (text.isEmpty()) {
-            filteredList.addAll(chargerList);
-        } else {
-            for (Charger charger : chargerList) {
+        for (Charger charger : chargerList) {
+            boolean matchesSearch = charger.getName().toLowerCase().contains(searchText);
+            boolean matchesCheap = true;
+            boolean matchesFast = true;
 
-                if (charger.getName().toLowerCase()
-                        .contains(text.toLowerCase())) {
-
-                    filteredList.add(charger);
+            if (filterCheap) {
+                try {
+                    double price = Double.parseDouble(charger.getPrice().replaceAll("[^0-9.]", ""));
+                    matchesCheap = price <= 1.0;
+                } catch (Exception e) {
+                    matchesCheap = false;
                 }
             }
+
+            if (filterFast) matchesFast = charger.isFastCharger();
+
+            if (matchesSearch && matchesCheap && matchesFast) filteredList.add(charger);
         }
+
+        // Sort by distance ascending
+        Collections.sort(filteredList, Comparator.comparingDouble(Charger::getDistance));
 
         adapter.notifyDataSetChanged();
     }

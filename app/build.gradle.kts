@@ -49,8 +49,14 @@ dependencies {
     implementation(libs.credentials.play.services.auth)
     implementation(libs.googleid)
     implementation(libs.firebase.firestore)
+    implementation(libs.firebase.storage)
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation(libs.play.services.location)
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
 }

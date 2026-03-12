@@ -1,14 +1,20 @@
 package com.example.evaccesstry4;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -21,13 +27,22 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_NAME = "extra_name";
     public static final String EXTRA_DISTANCE = "extra_distance";
     public static final String EXTRA_PRICE = "extra_price";
+    public static final String EXTRA_LAT = "extra_lat";
+    public static final String EXTRA_LNG = "extra_lng";
+
+    private static final int LOCATION_PERMISSION_REQUEST = 1;
 
     private MapView mapView;
     private static final String MAP_VIEW_BUNDLE_KEY = "MapViewBundleKey";
 
-    // coordinates passed via intent
     private double chargerLat = Double.NaN;
     private double chargerLng = Double.NaN;
+
+    private String chargerName;
+
+    private FusedLocationProviderClient fusedLocationClient;
+
+    private TextView distanceText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,105 +50,154 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         setContentView(R.layout.activity_charger_detail);
 
         TextView name = findViewById(R.id.detail_name);
-        TextView distance = findViewById(R.id.detail_distance);
+        distanceText = findViewById(R.id.detail_distance);
         TextView price = findViewById(R.id.detail_price);
         TextView status = findViewById(R.id.detail_status);
+
+        Button btnBook = findViewById(R.id.btn_book);
         Button btnStart = findViewById(R.id.btn_start_session);
         Button btnPay = findViewById(R.id.btn_pay);
 
-        String n = getIntent().getStringExtra(EXTRA_NAME);
-        String d = getIntent().getStringExtra(EXTRA_DISTANCE);
-        String p = getIntent().getStringExtra(EXTRA_PRICE);
-        if (getIntent().hasExtra("extra_lat")) {
-            chargerLat = getIntent().getDoubleExtra("extra_lat", Double.NaN);
+        // Receive data from intent
+        chargerName = getIntent().getStringExtra(EXTRA_NAME);
+        String chargerPrice = getIntent().getStringExtra(EXTRA_PRICE);
+
+        chargerLat = getIntent().getDoubleExtra(EXTRA_LAT, Double.NaN);
+        chargerLng = getIntent().getDoubleExtra(EXTRA_LNG, Double.NaN);
+
+        // Set text values
+        name.setText(chargerName != null ? chargerName : "Unknown Charger");
+        price.setText(chargerPrice != null ? chargerPrice : "Price unavailable");
+
+        // Status
+        if (chargerPrice != null) {
+            status.setText("Status: Available");
+            status.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+        } else {
+            status.setText("Status: Not Available");
+            status.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         }
-        if (getIntent().hasExtra("extra_lng")) {
-            chargerLng = getIntent().getDoubleExtra("extra_lng", Double.NaN);
-        }
 
-        name.setText(n != null ? n : "-");
-        distance.setText(d != null ? d : "-");
-        price.setText(p != null ? p : "-");
+        // Initialize location provider
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        // Mock availability: available if price exists
-        status.setText(p != null ? "Status: Available" : "Status: Unknown");
+        getUserLocation();
 
-        // initialize map view
+        // Initialize MapView
         mapView = findViewById(R.id.map_view);
         Bundle mapViewBundle = null;
+
         if (savedInstanceState != null) {
             mapViewBundle = savedInstanceState.getBundle(MAP_VIEW_BUNDLE_KEY);
         }
+
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
 
-        btnStart.setOnClickListener(v -> {
-            Intent i = new Intent(this, StartSessionActivity.class);
-            // pass charger info if needed
-            i.putExtra(EXTRA_NAME, n);
-            startActivity(i);
+        // BOOK BUTTON
+        btnBook.setOnClickListener(v -> {
+            Intent intent = new Intent(this, BookingActivity.class);
+            intent.putExtra(EXTRA_NAME, chargerName);
+            startActivity(intent);
         });
 
+        // START SESSION
+        btnStart.setOnClickListener(v -> {
+            Intent intent = new Intent(this, StartSessionActivity.class);
+            intent.putExtra(EXTRA_NAME, chargerName);
+            startActivity(intent);
+        });
+
+        // PAYMENT
         btnPay.setOnClickListener(v -> {
-            Intent i = new Intent(this, PaymentActivity.class);
-            i.putExtra(EXTRA_NAME, n);
-            startActivity(i);
+            Intent intent = new Intent(this, PaymentActivity.class);
+            intent.putExtra(EXTRA_NAME, chargerName);
+            startActivity(intent);
+        });
+    }
+
+    private void getUserLocation() {
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST);
+
+            return;
+        }
+
+        fusedLocationClient.getLastLocation().addOnSuccessListener(location -> {
+
+            if (location != null && !Double.isNaN(chargerLat) && !Double.isNaN(chargerLng)) {
+
+                float[] results = new float[1];
+
+                Location.distanceBetween(
+                        location.getLatitude(),
+                        location.getLongitude(),
+                        chargerLat,
+                        chargerLng,
+                        results
+                );
+
+                float distanceKm = results[0] / 1000;
+
+                distanceText.setText(String.format("%.2f km away", distanceKm));
+
+            } else {
+                distanceText.setText("Distance unavailable");
+            }
+
         });
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng loc;
+
+        LatLng location;
+
         if (!Double.isNaN(chargerLat) && !Double.isNaN(chargerLng)) {
-            loc = new LatLng(chargerLat, chargerLng);
+            location = new LatLng(chargerLat, chargerLng);
         } else {
-            // Default location (Kuala Lumpur)
-            loc = new LatLng(3.1390, 101.6869);
+            location = new LatLng(3.1390, 101.6869);
         }
-        googleMap.addMarker(new MarkerOptions().position(loc).title("Charger Location"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 14f));
+
+        googleMap.addMarker(
+                new MarkerOptions()
+                        .position(location)
+                        .title(chargerName != null ? chargerName : "EV Charger")
+        );
+
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f));
     }
 
+    // Map lifecycle
     @Override
-    protected void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
+    protected void onStart() { super.onStart(); mapView.onStart(); }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        mapView.onStart();
-    }
+    protected void onResume() { super.onResume(); mapView.onResume(); }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        mapView.onStop();
-    }
+    protected void onPause() { mapView.onPause(); super.onPause(); }
 
     @Override
-    protected void onPause() {
-        mapView.onPause();
-        super.onPause();
-    }
+    protected void onStop() { mapView.onStop(); super.onStop(); }
 
     @Override
-    protected void onDestroy() {
-        mapView.onDestroy();
-        super.onDestroy();
-    }
+    protected void onDestroy() { mapView.onDestroy(); super.onDestroy(); }
 
     @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
-    }
+    public void onLowMemory() { super.onLowMemory(); mapView.onLowMemory(); }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
+
         Bundle mapViewBundle = outState.getBundle(MAP_VIEW_BUNDLE_KEY);
+
         if (mapViewBundle == null) {
             mapViewBundle = new Bundle();
             outState.putBundle(MAP_VIEW_BUNDLE_KEY, mapViewBundle);
