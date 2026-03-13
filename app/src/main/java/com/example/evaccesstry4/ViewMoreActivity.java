@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.content.pm.PackageManager;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -63,6 +64,9 @@ public class ViewMoreActivity extends AppCompatActivity {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         searchEditText = findViewById(R.id.searchEditText);
+        ImageButton backBtn = findViewById(R.id.backBtn);
+
+
         recyclerView = findViewById(R.id.stationRecyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -85,6 +89,7 @@ public class ViewMoreActivity extends AppCompatActivity {
 
         chipCheap.setOnClickListener(v -> applyFilters());
         chipFast.setOnClickListener(v -> applyFilters());
+        backBtn.setOnClickListener(v -> finish());
     }
 
     private void getUserLocation() {

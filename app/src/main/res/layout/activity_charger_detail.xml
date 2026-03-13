@@ -11,6 +11,20 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Back Text Button -->
+        <TextView
+            android:id="@+id/backBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textSize="16sp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:padding="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:layout_marginBottom="12dp"/>
+
         <!-- Charger Name -->
         <TextView
             android:id="@+id/detail_name"

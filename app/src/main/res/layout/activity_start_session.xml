@@ -1,15 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/start_session_text"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout_start_session"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Start session"
-        android:textSize="18sp" />
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal"
+        android:background="@android:color/white">
 
-</LinearLayout>
+        <!-- Charger Name -->
+        <TextView
+            android:id="@+id/textChargerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EV Charger Name"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp" />
+
+        <!-- Booking Details -->
+        <TextView
+            android:id="@+id/textBookingDetails"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Booking Details"
+            android:textSize="16sp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Session Status -->
+        <TextView
+            android:id="@+id/textSessionStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: READY"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Countdown Timer -->
+        <TextView
+            android:id="@+id/textCountdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="00:00:00"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp"
+            android:visibility="gone" />
+
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBarSession"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:max="100"
+            android:progress="0"
+            android:layout_marginBottom="30dp"
+            android:visibility="gone"/>
+
+        <!-- Battery Level -->
+        <TextView
+            android:id="@+id/textBattery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Battery: 40%"
+            android:textSize="18sp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Energy Delivered -->
+        <TextView
+            android:id="@+id/textEnergy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Energy: 0.00 kWh"
+            android:textSize="18sp"
+            android:layout_marginBottom="10dp"/>
+
+        <!-- Charging Cost -->
+        <TextView
+            android:id="@+id/textCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cost: RM 0.00"
+            android:textSize="18sp"
+            android:layout_marginBottom="30dp"/>
+
+        <!-- Start Charging Button -->
+        <Button
+            android:id="@+id/btnStartCharging"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Start Charging"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- End Session Button -->
+        <Button
+            android:id="@+id/btnEndSession"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="End Session"
+            android:enabled="false"/>
+
+    </LinearLayout>
+
+</ScrollView>

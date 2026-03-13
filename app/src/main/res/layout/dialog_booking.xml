@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!-- Charger Name -->
+    <TextView
+        android:id="@+id/textChargerName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Charger Name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:paddingBottom="8dp"/>
+
+    <!-- Price per kWh -->
+    <TextView
+        android:id="@+id/textPrice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="RM 1.50/kWh"
+        android:paddingBottom="8dp"/>
+
+    <!-- Booking Type -->
+    <RadioGroup
+        android:id="@+id/radioGroupBookingType"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp">
+
+        <RadioButton
+            android:id="@+id/radioNow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Book Now"
+            android:checked="true"/>
+
+        <RadioButton
+            android:id="@+id/radioLater"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Book Later"/>
+    </RadioGroup>
+
+    <!-- Time Picker (only visible if Book Later) -->
+    <LinearLayout
+        android:id="@+id/layoutTimePicker"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:text="Start Time:"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
+
+        <TextView
+            android:id="@+id/textStartTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select Time"
+            android:paddingStart="16dp"
+            android:textColor="@android:color/holo_blue_dark"/>
+    </LinearLayout>
+
+    <!-- Duration -->
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="8dp">
+
+        <TextView
+            android:text="Duration (hrs):"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"/>
+
+        <EditText
+            android:id="@+id/inputDuration"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:inputType="number"
+            android:layout_marginStart="16dp"
+            android:text="1"/>
+    </LinearLayout>
+
+    <!-- Estimated Cost -->
+    <TextView
+        android:id="@+id/textEstimatedCost"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Estimated Cost: RM 1.50"
+        android:paddingBottom="16dp"/>
+
+    <!-- Confirm Button -->
+    <Button
+        android:id="@+id/btnConfirmBooking"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Confirm Booking"/>
+
+</LinearLayout>

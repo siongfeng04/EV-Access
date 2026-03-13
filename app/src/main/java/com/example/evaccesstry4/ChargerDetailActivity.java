@@ -29,6 +29,7 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_PRICE = "extra_price";
     public static final String EXTRA_LAT = "extra_lat";
     public static final String EXTRA_LNG = "extra_lng";
+    public static final String EXTRA_HOST_ID = "extra_host_id";
 
     private static final int LOCATION_PERMISSION_REQUEST = 1;
 
@@ -39,6 +40,7 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
     private double chargerLng = Double.NaN;
 
     private String chargerName;
+    private String chargerHostId;
 
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -57,9 +59,11 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         Button btnBook = findViewById(R.id.btn_book);
         Button btnStart = findViewById(R.id.btn_start_session);
         Button btnPay = findViewById(R.id.btn_pay);
+        TextView backBtn = findViewById(R.id.backBtn);
 
         // Receive data from intent
         chargerName = getIntent().getStringExtra(EXTRA_NAME);
+        chargerHostId = getIntent().getStringExtra(EXTRA_HOST_ID);
         String chargerPrice = getIntent().getStringExtra(EXTRA_PRICE);
 
         chargerLat = getIntent().getDoubleExtra(EXTRA_LAT, Double.NaN);
@@ -94,12 +98,19 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         mapView.onCreate(mapViewBundle);
         mapView.getMapAsync(this);
 
+        backBtn.setOnClickListener(v -> finish());
+
         // BOOK BUTTON
+
         btnBook.setOnClickListener(v -> {
-            Intent intent = new Intent(this, BookingActivity.class);
-            intent.putExtra(EXTRA_NAME, chargerName);
-            startActivity(intent);
+            BookingDialogFragment bookingDialog = new BookingDialogFragment(
+                    chargerName,   // from your activity
+                    chargerPrice,   // from your activity
+                    chargerHostId
+            );
+            bookingDialog.show(getSupportFragmentManager(), "BookingDialog");
         });
+
 
         // START SESSION
         btnStart.setOnClickListener(v -> {

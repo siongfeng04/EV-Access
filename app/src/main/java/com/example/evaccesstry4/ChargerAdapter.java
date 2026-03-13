@@ -77,6 +77,8 @@ public class ChargerAdapter extends RecyclerView.Adapter<ChargerAdapter.VH> {
             i.putExtra(ChargerDetailActivity.EXTRA_PRICE, c.getPrice());
             i.putExtra("extra_lat", c.getLat());
             i.putExtra("extra_lng", c.getLng());
+            i.putExtra("extra_host_id", c.getHostId());
+
 
             context.startActivity(i);
         });

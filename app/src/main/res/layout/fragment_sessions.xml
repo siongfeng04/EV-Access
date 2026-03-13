@@ -1,15 +1,62 @@
-<?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout_sessions"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Booked Sessions -->
     <TextView
-        android:id="@+id/text_sessions"
+        android:id="@+id/textBookedHeader"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Charging Sessions"
-        android:textSize="20sp"
-        android:layout_gravity="center" />
+        android:text="Booked Sessions"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/textNoBooked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No booked sessions available"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerBooked"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Completed Sessions -->
+    <TextView
+        android:id="@+id/textCompletedHeader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Completed Sessions"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="8dp"/>
+
+    <TextView
+        android:id="@+id/textNoCompleted"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="No completed sessions available"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="8dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerCompleted"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>
