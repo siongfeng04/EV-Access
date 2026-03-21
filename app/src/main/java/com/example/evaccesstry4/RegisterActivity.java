@@ -100,6 +100,7 @@ public class RegisterActivity extends AppCompatActivity {
         user.put("name", name);
         user.put("email", email);
         user.put("role", role);
+        user.put("wallet", 120.0);
         user.put("createdAt", FieldValue.serverTimestamp());
 
         db.collection("users")

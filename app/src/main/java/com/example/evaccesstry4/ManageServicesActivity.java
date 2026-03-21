@@ -268,6 +268,14 @@ public class ManageServicesActivity extends AppCompatActivity {
         service.put("fastCharger", fastCharger);
         service.put("category", category);
 
+        double power;
+        if (fastCharger) {
+            power = 22.0;   // fast charger
+        } else {
+            power = 7.0;    // normal charger
+        }
+        service.put("chargerPower", power);
+
         db.collection("services")
                 .add(service)
                 .addOnSuccessListener(docRef -> {

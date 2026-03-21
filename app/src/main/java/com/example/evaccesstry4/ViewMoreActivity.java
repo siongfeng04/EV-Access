@@ -133,11 +133,37 @@ public class ViewMoreActivity extends AppCompatActivity {
                             charger.setDistance(distanceKm);
 
                             chargerList.add(charger);
-
                         }
                     }
 
-                    applyFilters();
+                    // ⭐ Fetch ratings from bookings
+                    db.collection("bookings")
+                            .get()
+                            .addOnSuccessListener(bookingSnapshots -> {
+
+                                for (Charger charger : chargerList) {
+                                    double total = 0;
+                                    int count = 0;
+
+                                    for (DocumentSnapshot bookingDoc : bookingSnapshots) {
+                                        String cName = bookingDoc.getString("ChargerName");
+                                        Double rating = bookingDoc.getDouble("rating");
+
+                                        if (cName != null && cName.equals(charger.getName()) && rating != null) {
+                                            total += rating;
+                                            count++;
+                                        }
+                                    }
+
+                                    charger.setRating(count > 0 ? total / count : 0);
+                                }
+
+                                applyFilters(); // Apply search/filter and notify adapter
+                            })
+                            .addOnFailureListener(e -> {
+                                Toast.makeText(this, "Failed to fetch ratings", Toast.LENGTH_SHORT).show();
+                                applyFilters(); // still show chargers even if ratings fail
+                            });
                 })
                 .addOnFailureListener(e -> Toast.makeText(this,
                         "Failed to load chargers", Toast.LENGTH_SHORT).show());

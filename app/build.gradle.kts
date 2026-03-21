@@ -54,6 +54,8 @@ dependencies {
     implementation(libs.play.services.location)
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
     implementation("com.google.android.gms:play-services-location:21.0.1")
+    implementation("com.mikhaellopez:circularprogressbar:3.1.0")
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

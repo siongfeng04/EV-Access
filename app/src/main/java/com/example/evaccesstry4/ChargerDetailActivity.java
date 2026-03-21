@@ -30,6 +30,10 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_LAT = "extra_lat";
     public static final String EXTRA_LNG = "extra_lng";
     public static final String EXTRA_HOST_ID = "extra_host_id";
+    public static final String EXTRA_ID = "extra_id";
+    public static final String EXTRA_POWER = "extra_power";
+
+
 
     private static final int LOCATION_PERMISSION_REQUEST = 1;
 
@@ -57,14 +61,14 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         TextView status = findViewById(R.id.detail_status);
 
         Button btnBook = findViewById(R.id.btn_book);
-        Button btnStart = findViewById(R.id.btn_start_session);
-        Button btnPay = findViewById(R.id.btn_pay);
         TextView backBtn = findViewById(R.id.backBtn);
 
         // Receive data from intent
         chargerName = getIntent().getStringExtra(EXTRA_NAME);
         chargerHostId = getIntent().getStringExtra(EXTRA_HOST_ID);
         String chargerPrice = getIntent().getStringExtra(EXTRA_PRICE);
+        String chargerID = getIntent().getStringExtra(EXTRA_ID);
+        double chargerPower = getIntent().getDoubleExtra(EXTRA_POWER, Double.NaN);
 
         chargerLat = getIntent().getDoubleExtra(EXTRA_LAT, Double.NaN);
         chargerLng = getIntent().getDoubleExtra(EXTRA_LNG, Double.NaN);
@@ -106,25 +110,13 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
             BookingDialogFragment bookingDialog = new BookingDialogFragment(
                     chargerName,   // from your activity
                     chargerPrice,   // from your activity
-                    chargerHostId
+                    chargerHostId,  // from your activity
+                    chargerID,
+                    chargerPower
             );
             bookingDialog.show(getSupportFragmentManager(), "BookingDialog");
         });
 
-
-        // START SESSION
-        btnStart.setOnClickListener(v -> {
-            Intent intent = new Intent(this, StartSessionActivity.class);
-            intent.putExtra(EXTRA_NAME, chargerName);
-            startActivity(intent);
-        });
-
-        // PAYMENT
-        btnPay.setOnClickListener(v -> {
-            Intent intent = new Intent(this, PaymentActivity.class);
-            intent.putExtra(EXTRA_NAME, chargerName);
-            startActivity(intent);
-        });
     }
 
     private void getUserLocation() {

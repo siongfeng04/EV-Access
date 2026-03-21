@@ -13,6 +13,17 @@
         android:gravity="center_horizontal"
         android:background="@android:color/white">
 
+        <!-- Back Button -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="start"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_revert"
+            android:contentDescription="Back"
+            android:layout_marginBottom="16dp"/>
+
         <!-- Charger Name -->
         <TextView
             android:id="@+id/textChargerName"
@@ -32,6 +43,14 @@
             android:textSize="16sp"
             android:layout_marginBottom="20dp" />
 
+        <!-- QR Code -->
+        <ImageView
+            android:id="@+id/qrCodeImage"
+            android:layout_width="250dp"
+            android:layout_height="250dp"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="Booking QR Code" />
+
         <!-- Session Status -->
         <TextView
             android:id="@+id/textSessionStatus"
@@ -42,27 +61,34 @@
             android:textStyle="bold"
             android:layout_marginBottom="20dp" />
 
-        <!-- Countdown Timer -->
-        <TextView
-            android:id="@+id/textCountdown"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="00:00:00"
-            android:textSize="34sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="24dp"
-            android:visibility="gone" />
-
-        <!-- Progress Bar -->
-        <ProgressBar
-            android:id="@+id/progressBarSession"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:max="100"
-            android:progress="0"
+        <!-- Circular Progress + Timer -->
+        <FrameLayout
+            android:id="@+id/circleContainer"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_marginBottom="30dp"
-            android:visibility="gone"/>
+            android:visibility="gone">
+
+            <!-- Circular Progress -->
+            <ProgressBar
+                android:id="@+id/progressBarSession"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:indeterminate="false"
+                android:max="100"
+                android:progress="0"/>
+
+            <!-- Countdown Timer in Center -->
+            <TextView
+                android:id="@+id/textCountdown"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="00:00:00"
+                android:textSize="30sp"
+                android:textStyle="bold" />
+        </FrameLayout>
 
         <!-- Battery Level -->
         <TextView

@@ -51,7 +51,6 @@ public class HomeFragment extends Fragment {
     private UserViewModel userViewModel;
     private FirebaseFirestore db;
 
-    // LOCATION
     private FusedLocationProviderClient fusedLocationClient;
     private double userLat = 0;
     private double userLng = 0;
@@ -100,9 +99,7 @@ public class HomeFragment extends Fragment {
 
         getUserLocation();
 
-        // QR Scan
         btnQr.setOnClickListener(view -> {
-
             if (ContextCompat.checkSelfPermission(requireContext(),
                     Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
 
@@ -115,12 +112,10 @@ public class HomeFragment extends Fragment {
             }
         });
 
-        // Manage Services
         btnManageServices.setOnClickListener(view -> {
             startActivity(new Intent(requireContext(), ManageServicesActivity.class));
         });
 
-        // View More
         TextView viewMore = v.findViewById(R.id.text_view_more);
         viewMore.setOnClickListener(view -> {
 
@@ -131,7 +126,6 @@ public class HomeFragment extends Fragment {
             startActivity(intent);
         });
 
-        // Category filters
         catHome.setOnClickListener(v1 -> openCategory("home", "Home Chargers"));
         catMall.setOnClickListener(v1 -> openCategory("mall", "Mall Chargers"));
         catAirbnb.setOnClickListener(v1 -> openCategory("airbnb", "Airbnb Chargers"));
@@ -141,7 +135,7 @@ public class HomeFragment extends Fragment {
     }
 
     // =============================
-    // GET USER LOCATION
+    // LOCATION
     // =============================
     private void getUserLocation() {
 
@@ -169,9 +163,6 @@ public class HomeFragment extends Fragment {
                 .addOnFailureListener(e -> loadHomeUI());
     }
 
-    // =============================
-    // LOAD UI
-    // =============================
     private void loadHomeUI() {
 
         userViewModel.getRole().observe(getViewLifecycleOwner(), role -> {
@@ -183,12 +174,11 @@ public class HomeFragment extends Fragment {
             } else {
                 showUserHome();
             }
-
         });
     }
 
     // =============================
-    // DISTANCE CALCULATION
+    // DISTANCE
     // =============================
     private double calculateDistance(double chargerLat, double chargerLng) {
 
@@ -207,13 +197,9 @@ public class HomeFragment extends Fragment {
         return results[0] / 1000.0;
     }
 
-    // =============================
-    // CATEGORY
-    // =============================
     private void openCategory(String category, String title) {
 
         Intent intent = new Intent(requireContext(), ViewMoreActivity.class);
-
         intent.putExtra("category", category);
         intent.putExtra("title", title);
 
@@ -221,7 +207,7 @@ public class HomeFragment extends Fragment {
     }
 
     // =============================
-    // DRIVER HOME
+    // DRIVER HOME (UPDATED)
     // =============================
     private void showUserHome() {
 
@@ -231,10 +217,19 @@ public class HomeFragment extends Fragment {
         layoutDriver.setVisibility(View.VISIBLE);
         layoutHost.setVisibility(View.GONE);
 
-        textBalance.setText("RM 120.50");
-
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
+
+        db.collection("users")
+                .document(user.getUid())
+                .addSnapshotListener((doc, e) -> {
+
+                    if (doc != null && doc.exists()) {
+                        Double wallet = doc.getDouble("wallet");
+                        textBalance.setText("RM " + String.format("%.2f", wallet != null ? wallet : 0));
+                    }
+                });
+
 
         db.collection("services")
                 .get()
@@ -243,46 +238,51 @@ public class HomeFragment extends Fragment {
                     List<Charger> userChargers = new ArrayList<>();
 
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
-
                         Charger charger = doc.toObject(Charger.class);
-
                         if (charger != null) {
-
                             double lat = charger.getLat();
                             double lng = charger.getLng();
-
                             double distance = calculateDistance(lat, lng);
 
-                            charger.setDistance(distance);
-
-                            // Only chargers within 30 km
                             if (distance >= 0 && distance <= 30) {
-
                                 charger.setId(doc.getId());
+                                charger.setDistance(distance);
                                 userChargers.add(charger);
                             }
                         }
                     }
 
-                    // Sort nearest first
-                    userChargers.sort((c1, c2) ->
-                            Double.compare(c1.getDistance(), c2.getDistance()));
+                    // ⭐ Fetch ratings from bookings by chargerName
+                    db.collection("bookings")
+                            .get()
+                            .addOnSuccessListener(bookingSnapshots -> {
 
-                    ChargerAdapter adapter =
-                            new ChargerAdapter(requireContext(), userChargers);
+                                for (Charger charger : userChargers) {
+                                    double total = 0;
+                                    int count = 0;
 
-                    recyclerNearest.setAdapter(adapter);
+                                    for (DocumentSnapshot bookingDoc : bookingSnapshots) {
+                                        String cName = bookingDoc.getString("ChargerName");
+                                        Double rating = bookingDoc.getDouble("rating");
 
-                    if (userChargers.isEmpty()) {
-                        Toast.makeText(requireContext(),
-                                "No chargers within 30km",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(requireContext(),
-                                "Failed to load chargers",
-                                Toast.LENGTH_SHORT).show());
+                                        if (cName != null && cName.equals(charger.getName()) && rating != null) {
+                                            total += rating;
+                                            count++;
+                                        }
+                                    }
+
+                                    charger.setRating(count > 0 ? total / count : 0);
+                                }
+
+                                // Sort by distance
+                                userChargers.sort((c1, c2) ->
+                                        Double.compare(c1.getDistance(), c2.getDistance()));
+
+                                ChargerAdapter adapter =
+                                        new ChargerAdapter(requireContext(), userChargers);
+                                recyclerNearest.setAdapter(adapter);
+                            });
+                });
     }
 
     // =============================
@@ -290,60 +290,99 @@ public class HomeFragment extends Fragment {
     // =============================
     private void showHostHome() {
 
-        layoutDriver.setVisibility(View.GONE);
-
-        btnQr.setVisibility(View.GONE);
-        btnManageServices.setVisibility(View.VISIBLE);
-
-        layoutHost.setVisibility(View.VISIBLE);
-
-        textBalance.setText("Host Balance: RM 0.00");
+        // -------------------
+        // Layout visibility
+        // -------------------
+        layoutDriver.setVisibility(View.GONE);      // hide driver UI
+        layoutHost.setVisibility(View.VISIBLE);     // show host UI
+        btnQr.setVisibility(View.GONE);             // hide QR button
+        btnManageServices.setVisibility(View.VISIBLE); // show manage services button
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) return;
 
+        String hostId = user.getUid();
+        db.collection("users")
+                .document(hostId)
+                .addSnapshotListener((doc, e) -> {
+                    if (doc != null && doc.exists()) {
+                        Double wallet = doc.getDouble("wallet");
+                        textBalance.setText("Host Balance: RM " +
+                                String.format("%.2f", wallet != null ? wallet : 0));
+                    }
+                });
+
+        // -------------------
+        // Load host services
+        // -------------------
         db.collection("services")
-                .whereEqualTo("hostId", user.getUid())
+                .whereEqualTo("hostId", hostId)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
 
                     List<Charger> hostServices = new ArrayList<>();
-
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
-
                         Charger charger = doc.toObject(Charger.class);
+                        if (charger != null) hostServices.add(charger);
+                    }
 
-                        if (charger != null) {
-                            hostServices.add(charger);
+                    recyclerHostServices.setAdapter(
+                            new ChargerAdapter(requireContext(), hostServices));
+                });
+
+        // -------------------
+        // Load host bookings & calculate earnings
+        // -------------------
+        db.collection("bookings")
+                .whereEqualTo("hostId", hostId)
+                .get()
+                .addOnSuccessListener(querySnapshot -> {
+
+                    double weekEarning = 0;
+                    double monthEarning = 0;
+                    double yearEarning = 0;
+                    double totalRating = 0;
+                    int ratingCount = 0;
+
+                    long now = System.currentTimeMillis();
+                    long oneWeek = 7L * 24 * 60 * 60 * 1000;
+                    long oneMonth = 30L * 24 * 60 * 60 * 1000;
+                    long oneYear = 365L * 24 * 60 * 60 * 1000;
+
+                    for (DocumentSnapshot doc : querySnapshot) {
+                        Booking booking = doc.toObject(Booking.class);
+                        if (booking == null) continue;
+
+                        long ts = booking.getTimestamp();
+                        double totalCost = booking.getTotalCost();
+
+                        // Only count completed bookings
+                        if ("COMPLETED".equalsIgnoreCase(booking.getStatus())) {
+                            if (now - ts <= oneWeek) weekEarning += totalCost;
+                            if (now - ts <= oneMonth) monthEarning += totalCost;
+                            if (now - ts <= oneYear) yearEarning += totalCost;
+                        }
+
+                        // Ratings
+                        Double rating = doc.getDouble("rating");
+                        if (rating != null) {
+                            totalRating += rating;
+                            ratingCount++;
                         }
                     }
 
-                    ChargerAdapter adapter =
-                            new ChargerAdapter(requireContext(), hostServices);
+                    textEarningWeek.setText("RM " + String.format("%.2f", weekEarning));
+                    textEarningMonth.setText("RM " + String.format("%.2f", monthEarning));
+                    textEarningYear.setText("RM " + String.format("%.2f", yearEarning));
 
-                    recyclerHostServices.setAdapter(adapter);
-                });
-
-        db.collection("earnings")
-                .document(user.getUid())
-                .get()
-                .addOnSuccessListener(doc -> {
-
-                    if (doc.exists()) {
-
-                        Double week = doc.getDouble("week");
-                        Double month = doc.getDouble("month");
-                        Double year = doc.getDouble("year");
-
-                        textEarningWeek.setText("RM " + (week != null ? week : 0));
-                        textEarningMonth.setText("RM " + (month != null ? month : 0));
-                        textEarningYear.setText("RM " + (year != null ? year : 0));
-                    }
+                    // Optional: show average rating in a TextView if you add one
+                    // TextView textAvgRating = v.findViewById(R.id.text_avg_rating);
+                    // textAvgRating.setText("⭐ " + String.format("%.1f", ratingCount > 0 ? totalRating / ratingCount : 0));
                 });
     }
 
     // =============================
-    // QR SCAN
+    // QR
     // =============================
     private void startScan() {
 
@@ -375,16 +414,9 @@ public class HomeFragment extends Fragment {
             String contents = result.getContents();
 
             if (contents != null) {
-
                 Toast.makeText(requireContext(),
                         "Scanned: " + contents,
                         Toast.LENGTH_LONG).show();
-
-            } else {
-
-                Toast.makeText(requireContext(),
-                        "Cancelled",
-                        Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -405,12 +437,6 @@ public class HomeFragment extends Fragment {
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 startScan();
-
-            } else {
-
-                Toast.makeText(requireContext(),
-                        "Camera permission required",
-                        Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -422,11 +448,6 @@ public class HomeFragment extends Fragment {
                 getUserLocation();
 
             } else {
-
-                Toast.makeText(requireContext(),
-                        "Location permission required",
-                        Toast.LENGTH_SHORT).show();
-
                 loadHomeUI();
             }
         }

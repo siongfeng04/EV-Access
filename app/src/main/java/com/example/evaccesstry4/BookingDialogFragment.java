@@ -3,6 +3,7 @@ package com.example.evaccesstry4;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -38,14 +39,21 @@ public class BookingDialogFragment extends DialogFragment {
     private String chargerName = "";
     private String priceStr = "";
     private String hostId = "";
+    private String chargerID = "";
+    private double chargerPower = 7.0;
+
+
 
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
-    public BookingDialogFragment(String chargerName, String priceStr, String chargerHostId) {
+    public BookingDialogFragment(String chargerName, String priceStr, String chargerHostId, String chargerID, double chargerPower) {
         this.chargerName = chargerName;
         this.priceStr = priceStr;
         this.hostId = chargerHostId;
+        this.chargerID = chargerID;
+        this.chargerPower = chargerPower;
+
 
         if (priceStr != null) {
             try {
@@ -165,7 +173,7 @@ public class BookingDialogFragment extends DialogFragment {
     }
 
     private void calculateEstimatedCost() {
-        double total = durationHours * chargerPricePerKWh;
+        double total = chargerPower * durationHours * chargerPricePerKWh;
         textEstimatedCost.setText("Estimated Cost: RM " + total);
     }
 
@@ -175,7 +183,7 @@ public class BookingDialogFragment extends DialogFragment {
             return;
         }
 
-        double totalCost = durationHours * chargerPricePerKWh;
+        double totalCost = chargerPower * durationHours * chargerPricePerKWh;
 
         Calendar selectedTime = Calendar.getInstance();
         if (isBookNow) {
@@ -194,6 +202,7 @@ public class BookingDialogFragment extends DialogFragment {
         booking.put("price", priceStr);
         booking.put("duration", durationHours);
         booking.put("startTime", startTimeStr);
+        booking.put("estimatedCost", totalCost);
         booking.put("totalCost", totalCost);
         booking.put("userId", userId);
         booking.put("hostId", hostId);
@@ -204,6 +213,7 @@ public class BookingDialogFragment extends DialogFragment {
                 .add(booking)
                 .addOnSuccessListener(docRef -> {
                     Toast.makeText(getContext(), "Booking successful!", Toast.LENGTH_LONG).show();
+
                     dismiss();
                 })
                 .addOnFailureListener(e ->

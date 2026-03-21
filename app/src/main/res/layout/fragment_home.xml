@@ -281,102 +281,118 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:weightSum="3">
+                android:weightSum="3"
+                android:layout_marginBottom="8dp">
 
-                <!-- Week -->
+                <!-- Week Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="80dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     android:padding="12dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="6dp">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
 
+                        <!-- Period Text -->
+                        <TextView
+                            android:id="@+id/text_week_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="This Week"
+                            android:textSize="12sp"
+                            android:textColor="@android:color/darker_gray"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"/>
+
+                        <!-- Earning -->
                         <TextView
                             android:id="@+id/text_earning_week"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="RM 0.00"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="This Week"
-                            android:textSize="12sp"/>
-                    </LinearLayout>
-
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_centerInParent="true"
+                            android:textColor="@android:color/black"/>
+                    </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Month -->
+                <!-- Month Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="80dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     android:padding="12dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="6dp">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/text_month_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="This Month"
+                            android:textSize="12sp"
+                            android:textColor="@android:color/darker_gray"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"/>
 
                         <TextView
                             android:id="@+id/text_earning_month"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="RM 0.00"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="This Month"
-                            android:textSize="12sp"/>
-                    </LinearLayout>
-
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_centerInParent="true"
+                            android:textColor="@android:color/black"/>
+                    </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Year -->
+                <!-- Year Card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="80dp"
                     android:layout_weight="1"
                     android:padding="12dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="6dp">
 
-                    <LinearLayout
+                    <RelativeLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:layout_height="match_parent">
+
+                        <TextView
+                            android:id="@+id/text_year_label"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="This Year"
+                            android:textSize="12sp"
+                            android:textColor="@android:color/darker_gray"
+                            android:layout_alignParentTop="true"
+                            android:layout_alignParentStart="true"/>
 
                         <TextView
                             android:id="@+id/text_earning_year"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="RM 0.00"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="This Year"
-                            android:textSize="12sp"/>
-                    </LinearLayout>
-
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:layout_centerInParent="true"
+                            android:textColor="@android:color/black"/>
+                    </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
+
 
             </LinearLayout>
 

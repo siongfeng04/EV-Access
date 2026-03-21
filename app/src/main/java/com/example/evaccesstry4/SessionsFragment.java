@@ -1,5 +1,7 @@
 package com.example.evaccesstry4;
 
+import static androidx.core.content.ContextCompat.startForegroundService;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
@@ -126,6 +128,22 @@ public class SessionsFragment extends Fragment {
                     Intent intent = new Intent(getContext(), StartSessionActivity.class);
                     intent.putExtra("extra_name", booking.getChargerName());
                     intent.putExtra("extra_booking_id", booking.getId());
+                    long durationMs = (long) (booking.getDuration() * 60 * 60 * 1000);
+                    intent.putExtra("extra_duration", durationMs);
+
+                    // Extract numeric price
+                    double pricePerKwh = 1.0; // default
+                    String priceStr = booking.getPrice(); // e.g. "RM1.00/kWh"
+                    if (priceStr != null && !priceStr.isEmpty()) {
+                        priceStr = priceStr.replaceAll("[^0-9.]", ""); // keep digits & dot
+                        try {
+                            pricePerKwh = Double.parseDouble(priceStr);
+                        } catch (NumberFormatException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    intent.putExtra("extra_price", pricePerKwh);
+
 
                     sessionLauncher.launch(intent);
                 });
