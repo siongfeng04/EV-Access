@@ -23,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -62,6 +63,7 @@ public class HomeFragment extends Fragment {
     private double userLng = 0;
 
     private PieChart pieChart;
+    MaterialCardView cardBalance;
 
     @Nullable
     @Override
@@ -77,6 +79,7 @@ public class HomeFragment extends Fragment {
         btnQr = v.findViewById(R.id.btn_qr_scan);
         btnManageServices = v.findViewById(R.id.btn_manage_services);
         textBalance = v.findViewById(R.id.text_balance);
+        cardBalance = v.findViewById(R.id.card_balance);
 
         layoutDriver = v.findViewById(R.id.layout_driver_section);
         layoutHost = v.findViewById(R.id.layout_host_section);
@@ -123,6 +126,10 @@ public class HomeFragment extends Fragment {
             } else {
                 startScan();
             }
+        });
+
+        cardBalance.setOnClickListener(view -> {
+            startActivity(new Intent(requireContext(), TopUpActivity.class));
         });
 
         btnManageServices.setOnClickListener(view -> {

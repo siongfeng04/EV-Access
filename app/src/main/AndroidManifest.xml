@@ -21,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EVAccessTry4">
         <activity
+            android:name=".TopUpActivity"
+            android:exported="false" />
+        <activity
             android:name=".MapPickerActivity"
             android:exported="false" />
         <activity

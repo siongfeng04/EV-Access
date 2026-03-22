@@ -35,11 +35,15 @@
                 android:visibility="gone" />
 
             <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_balance"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="12dp"
                 android:padding="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
 
@@ -63,7 +67,9 @@
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp" />
+
                 </LinearLayout>
+
 
             </com.google.android.material.card.MaterialCardView>
 

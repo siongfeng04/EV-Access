@@ -61,7 +61,6 @@ public class ManageServicesActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
 
         inputName = findViewById(R.id.input_name);
-        inputDistance = findViewById(R.id.input_distance);
         inputPrice = findViewById(R.id.input_price);
         spinnerCategory = findViewById(R.id.spinner_category);
         switchFastCharger = findViewById(R.id.switch_fast_charger);
@@ -73,7 +72,7 @@ public class ManageServicesActivity extends AppCompatActivity {
         txtSelectedLocation = findViewById(R.id.txt_selected_location);
 
         // Spinner categories
-        String[] categories = {"Home", "Mall", "Airbnb", "Office"};
+        String[] categories = {"Home", "Mall", "Airbnb", "Office","Others"};
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
@@ -191,12 +190,11 @@ public class ManageServicesActivity extends AppCompatActivity {
     private void saveService() {
 
         String name = inputName.getText().toString().trim();
-        String distance = inputDistance.getText().toString().trim();
         String price = inputPrice.getText().toString().trim();
         String category = spinnerCategory.getSelectedItem().toString();
         boolean fastCharger = switchFastCharger.isChecked();
 
-        if (name.isEmpty() || distance.isEmpty() || price.isEmpty()) {
+        if (name.isEmpty() || price.isEmpty()) {
 
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -212,17 +210,17 @@ public class ManageServicesActivity extends AppCompatActivity {
 
         if (imageUri != null) {
 
-            uploadImageAndSave(name, distance, price, hostId, fastCharger, category);
+            uploadImageAndSave(name, price, hostId, fastCharger, category);
 
         } else {
 
-            saveToFirestore(name, distance, price, hostId, "", fastCharger, category);
+            saveToFirestore(name, price, hostId, "", fastCharger, category);
         }
     }
 
     // ================= UPLOAD IMAGE =================
 
-    private void uploadImageAndSave(String name, String distance, String price,
+    private void uploadImageAndSave(String name,  String price,
                                     String hostId, boolean fastCharger, String category) {
 
         String imageName = UUID.randomUUID().toString();
@@ -236,7 +234,7 @@ public class ManageServicesActivity extends AppCompatActivity {
 
                             String imageUrl = uri.toString();
 
-                            saveToFirestore(name, distance, price,
+                            saveToFirestore(name, price,
                                     hostId, imageUrl, fastCharger, category);
 
                         })
@@ -252,14 +250,13 @@ public class ManageServicesActivity extends AppCompatActivity {
 
     // ================= SAVE FIRESTORE =================
 
-    private void saveToFirestore(String name, String distance, String price,
+    private void saveToFirestore(String name, String price,
                                  String hostId, String imageUrl,
                                  boolean fastCharger, String category) {
 
         Map<String, Object> service = new HashMap<>();
 
         service.put("name", name);
-        service.put("distance", distance);
         service.put("price", price);
         service.put("lat", selectedLat);
         service.put("lng", selectedLng);

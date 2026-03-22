@@ -36,7 +36,7 @@ public class ViewMoreActivity extends AppCompatActivity {
     private List<Charger> filteredList;
 
     private TextInputEditText searchEditText;
-    private Chip chipCheap, chipFast;
+    private Chip chipCheap, chipFast, chipRate;
 
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationClient;
@@ -72,6 +72,8 @@ public class ViewMoreActivity extends AppCompatActivity {
 
         chipCheap = findViewById(R.id.chipCheap);
         chipFast = findViewById(R.id.chipFast);
+        chipRate = findViewById(R.id.chipRate);
+
 
         chargerList = new ArrayList<>();
         filteredList = new ArrayList<>();
@@ -89,6 +91,8 @@ public class ViewMoreActivity extends AppCompatActivity {
 
         chipCheap.setOnClickListener(v -> applyFilters());
         chipFast.setOnClickListener(v -> applyFilters());
+        chipRate.setOnClickListener(v -> applyFilters());
+
         backBtn.setOnClickListener(v -> finish());
     }
 
@@ -173,6 +177,8 @@ public class ViewMoreActivity extends AppCompatActivity {
         String searchText = searchEditText.getText().toString().trim().toLowerCase();
         boolean filterCheap = chipCheap.isChecked();
         boolean filterFast = chipFast.isChecked();
+        boolean filterRate = chipRate.isChecked();
+
 
         filteredList.clear();
 
@@ -180,6 +186,8 @@ public class ViewMoreActivity extends AppCompatActivity {
             boolean matchesSearch = charger.getName().toLowerCase().contains(searchText);
             boolean matchesCheap = true;
             boolean matchesFast = true;
+            boolean matchesRate = true;
+
 
             if (filterCheap) {
                 try {
@@ -191,8 +199,11 @@ public class ViewMoreActivity extends AppCompatActivity {
             }
 
             if (filterFast) matchesFast = charger.isFastCharger();
+            if (filterRate) matchesRate = charger.getRating() >= 3.0;
 
-            if (matchesSearch && matchesCheap && matchesFast) filteredList.add(charger);
+
+
+            if (matchesSearch && matchesCheap && matchesFast && matchesRate) filteredList.add(charger);
         }
 
         // Sort by distance ascending

@@ -5,8 +5,11 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,6 +24,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ChargerDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -44,6 +48,9 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
     private double chargerLat = Double.NaN;
     private double chargerLng = Double.NaN;
 
+    private Button btnBook, btnDelete;
+    private String currentUserId;
+
     private String chargerName;
     private String chargerHostId;
 
@@ -64,6 +71,8 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         TextView hostPhone = findViewById(R.id.detail_host_phone);
 
         Button btnBook = findViewById(R.id.btn_book);
+        Button btnDelete = findViewById(R.id.btn_delete);
+
         TextView backBtn = findViewById(R.id.backBtn);
 
         // Receive data from intent
@@ -126,18 +135,42 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
 
         backBtn.setOnClickListener(v -> finish());
 
-        // BOOK BUTTON
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        btnBook.setOnClickListener(v -> {
-            BookingDialogFragment bookingDialog = new BookingDialogFragment(
-                    chargerName,   // from your activity
-                    chargerPrice,   // from your activity
-                    chargerHostId,  // from your activity
-                    chargerID,
-                    chargerPower
-            );
-            bookingDialog.show(getSupportFragmentManager(), "BookingDialog");
-        });
+// Check if current user is host (owner of charger)
+        if (currentUserId.equals(chargerHostId)) {
+
+            btnBook.setText("Edit Charger"); // Change text
+
+            btnBook.setOnClickListener(v -> openEditDialog());
+
+            btnDelete.setOnClickListener(v -> {
+                new androidx.appcompat.app.AlertDialog.Builder(ChargerDetailActivity.this)
+                        .setTitle("Delete Charger")
+                        .setMessage("Are you sure you want to delete this charger? This action cannot be undone.")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            deleteCharger(); // call your existing delete function
+                        })
+                        .setNegativeButton("No", null) // just dismiss
+                        .show();
+            });
+
+        } else {
+            // Keep existing booking functionality
+            btnBook.setText("Book Charger");
+            btnDelete.setVisibility(View.GONE);
+
+            btnBook.setOnClickListener(v -> {
+                BookingDialogFragment bookingDialog = new BookingDialogFragment(
+                        chargerName,
+                        getIntent().getStringExtra(EXTRA_PRICE),
+                        chargerHostId,
+                        getIntent().getStringExtra(EXTRA_ID),
+                        getIntent().getDoubleExtra(EXTRA_POWER, Double.NaN)
+                );
+                bookingDialog.show(getSupportFragmentManager(), "BookingDialog");
+            });
+        }
 
     }
 
@@ -230,4 +263,59 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
 
         mapView.onSaveInstanceState(mapViewBundle);
     }
+
+    private void openEditDialog() {
+
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_edit_charger, null);
+
+        EditText editName = dialogView.findViewById(R.id.edit_name);
+        EditText editPrice = dialogView.findViewById(R.id.edit_price);
+
+        // pre-fill existing data
+        editName.setText(chargerName);
+        editPrice.setText(getIntent().getStringExtra(EXTRA_PRICE));
+
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Edit Charger")
+                .setView(dialogView)
+                .setPositiveButton("Update", (dialog, which) -> {
+                    String newName = editName.getText().toString();
+                    String newPrice = editPrice.getText().toString();
+                    updateCharger(newName, newPrice);
+                })
+                .setNeutralButton("Cancel", null)
+                .show();
+    }
+
+    private void updateCharger(String name, String price) {
+        String chargerId = getIntent().getStringExtra(EXTRA_ID);
+
+        FirebaseFirestore.getInstance()
+                .collection("services")
+                .document(chargerId)
+                .update(
+                        "name", name,
+                        "price", price
+                )
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Charger updated!", Toast.LENGTH_SHORT).show();
+                    finish(); // refresh activity
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Update failed", Toast.LENGTH_SHORT).show());
+    }
+
+    private void deleteCharger() {
+        String chargerId = getIntent().getStringExtra(EXTRA_ID);
+
+        FirebaseFirestore.getInstance()
+                .collection("services")
+                .document(chargerId)
+                .delete()
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(this, "Charger deleted!", Toast.LENGTH_SHORT).show();
+                    finish();
+                })
+                .addOnFailureListener(e -> Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show());
+    }
+
 }

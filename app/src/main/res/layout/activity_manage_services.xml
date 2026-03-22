@@ -18,15 +18,6 @@
             android:hint="Charger Name"
             android:inputType="text"/>
 
-        <!-- Distance -->
-        <EditText
-            android:id="@+id/input_distance"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Distance (e.g. 0.5 km)"
-            android:layout_marginTop="12dp"
-            android:inputType="text"/>
-
         <!-- Price -->
         <EditText
             android:id="@+id/input_price"
