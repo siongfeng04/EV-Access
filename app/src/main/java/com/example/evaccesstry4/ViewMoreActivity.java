@@ -146,7 +146,7 @@ public class ViewMoreActivity extends AppCompatActivity {
                                     int count = 0;
 
                                     for (DocumentSnapshot bookingDoc : bookingSnapshots) {
-                                        String cName = bookingDoc.getString("ChargerName");
+                                        String cName = bookingDoc.getString("chargerName");
                                         Double rating = bookingDoc.getDouble("rating");
 
                                         if (cName != null && cName.equals(charger.getName()) && rating != null) {

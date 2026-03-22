@@ -31,7 +31,12 @@ import com.journeyapps.barcodescanner.CaptureActivity;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
+import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.data.*;
+import com.github.mikephil.charting.utils.ColorTemplate;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class HomeFragment extends Fragment {
@@ -39,7 +44,8 @@ public class HomeFragment extends Fragment {
     private static final int REQUEST_CAMERA = 1001;
     private static final int REQUEST_LOCATION = 1002;
 
-    private RecyclerView recyclerNearest, recyclerHostServices;
+    private RecyclerView recyclerNearest, recyclerHostServices, recyclerTopChargers;
+    private List<TopCharger> topList = new ArrayList<>();
     private TextView textBalance;
     private ImageButton btnQr, btnManageServices;
 
@@ -54,6 +60,8 @@ public class HomeFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private double userLat = 0;
     private double userLng = 0;
+
+    private PieChart pieChart;
 
     @Nullable
     @Override
@@ -76,9 +84,14 @@ public class HomeFragment extends Fragment {
         recyclerNearest = v.findViewById(R.id.recycler_nearest);
         recyclerHostServices = v.findViewById(R.id.recycler_host_services);
 
+        recyclerTopChargers = v.findViewById(R.id.recycler_top_chargers);
+        recyclerTopChargers.setLayoutManager(new LinearLayoutManager(getContext()));
+
         textEarningWeek = v.findViewById(R.id.text_earning_week);
         textEarningMonth = v.findViewById(R.id.text_earning_month);
         textEarningYear = v.findViewById(R.id.text_earning_year);
+
+        pieChart = v.findViewById(R.id.piechart_revenue_breakdown);
 
         catHome = v.findViewById(R.id.cat_home);
         catMall = v.findViewById(R.id.cat_mall);
@@ -262,7 +275,7 @@ public class HomeFragment extends Fragment {
                                     int count = 0;
 
                                     for (DocumentSnapshot bookingDoc : bookingSnapshots) {
-                                        String cName = bookingDoc.getString("ChargerName");
+                                        String cName = bookingDoc.getString("chargerName");
                                         Double rating = bookingDoc.getDouble("rating");
 
                                         if (cName != null && cName.equals(charger.getName()) && rating != null) {
@@ -302,6 +315,7 @@ public class HomeFragment extends Fragment {
         if (user == null) return;
 
         String hostId = user.getUid();
+
         db.collection("users")
                 .document(hostId)
                 .addSnapshotListener((doc, e) -> {
@@ -379,6 +393,9 @@ public class HomeFragment extends Fragment {
                     // TextView textAvgRating = v.findViewById(R.id.text_avg_rating);
                     // textAvgRating.setText("⭐ " + String.format("%.1f", ratingCount > 0 ? totalRating / ratingCount : 0));
                 });
+
+        loadTopChargers(hostId);
+        loadRevenueBreakdown(hostId);
     }
 
     // =============================
@@ -451,5 +468,89 @@ public class HomeFragment extends Fragment {
                 loadHomeUI();
             }
         }
+    }
+
+    private void loadTopChargers(String hostId) {
+
+        db.collection("bookings")
+                .whereEqualTo("hostId", hostId)
+                .get()
+                .addOnSuccessListener(snapshots -> {
+
+                    HashMap<String, TopCharger> map = new HashMap<>();
+
+                    for (DocumentSnapshot doc : snapshots) {
+
+                        String name = doc.getString("chargerName");
+                        Double revenue = doc.getDouble("totalCost");
+
+                        if (name == null) continue;
+
+                        TopCharger existing = map.get(name);
+
+                        if (existing == null) {
+                            existing = new TopCharger(name, 0, 0);
+                        }
+
+                        int bookings = existing.getTotalBookings() + 1;
+                        double total = existing.getTotalRevenue() + (revenue != null ? revenue : 0);
+
+                        map.put(name, new TopCharger(name, bookings, total));
+                    }
+
+                    topList.clear();
+                    topList.addAll(map.values());
+
+                    // Sort by revenue DESC
+                    topList.sort((a, b) ->
+                            Double.compare(b.getTotalRevenue(), a.getTotalRevenue()));
+
+                    recyclerTopChargers.setAdapter(new TopChargerAdapter(topList));
+                });
+    }
+
+    private void loadRevenueBreakdown(String hostId) {
+
+        db.collection("bookings")
+                .whereEqualTo("hostId", hostId)
+                .get()
+                .addOnSuccessListener(snapshots -> {
+
+                    double home = 0, mall = 0, airbnb = 0, office = 0;
+
+                    for (DocumentSnapshot doc : snapshots) {
+
+                        String category = doc.getString("category");
+                        Double revenue = doc.getDouble("totalCost");
+
+                        if (category == null || revenue == null) continue;
+
+                        switch (category.toLowerCase()) {
+                            case "home": home += revenue; break;
+                            case "mall": mall += revenue; break;
+                            case "airbnb": airbnb += revenue; break;
+                            case "office": office += revenue; break;
+                        }
+                    }
+
+                    List<PieEntry> entries = new ArrayList<>();
+
+                    if (home > 0) entries.add(new PieEntry((float) home, "Home"));
+                    if (mall > 0) entries.add(new PieEntry((float) mall, "Mall"));
+                    if (airbnb > 0) entries.add(new PieEntry((float) airbnb, "Airbnb"));
+                    if (office > 0) entries.add(new PieEntry((float) office, "Office"));
+
+                    PieDataSet dataSet = new PieDataSet(entries, "");
+                    dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+
+                    PieData data = new PieData(dataSet);
+                    data.setValueTextSize(12f);
+
+                    pieChart.setData(data);
+                    pieChart.setUsePercentValues(true);
+                    pieChart.getDescription().setEnabled(false);
+                    pieChart.animateY(1000);
+                    pieChart.invalidate();
+                });
     }
 }

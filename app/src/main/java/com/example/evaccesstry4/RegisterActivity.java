@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText editName, editEmail, editPassword, editConfirm;
+    private EditText editName, editEmail, editPassword, editConfirm, editPhone;
     private RadioGroup roleGroup;
     private Button btnRegister, btnBack;
 
@@ -41,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         editEmail = findViewById(R.id.editRegEmail);
         editPassword = findViewById(R.id.editRegPassword);
         editConfirm = findViewById(R.id.editRegConfirm);
+        editPhone = findViewById(R.id.editTextPhone);
         //roleGroup = findViewById(R.id.radioGroupRole); // Radio buttons: Driver, Host
         btnRegister = findViewById(R.id.btnRegister);
         btnBack = findViewById(R.id.btnBackToLogin);
@@ -49,6 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister.setOnClickListener(v -> {
             String name = editName.getText().toString().trim();
             String email = editEmail.getText().toString().trim();
+            String phone = editPhone.getText().toString().trim();
             String password = editPassword.getText().toString().trim();
             String confirm = editConfirm.getText().toString().trim();
 
@@ -77,7 +79,7 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser firebaseUser = mAuth.getCurrentUser();
                             if (firebaseUser != null) {
-                                saveUserToFirestore(firebaseUser.getUid(), name, email,role);
+                                saveUserToFirestore(firebaseUser.getUid(), name, email, phone,role);
                             }
                         } else {
                             Toast.makeText(RegisterActivity.this,
@@ -95,10 +97,11 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     // Save user profile to Firestore
-    private void saveUserToFirestore(String uid, String name, String email, String role) {
+    private void saveUserToFirestore(String uid, String name, String email, String phone, String role) {
         Map<String, Object> user = new HashMap<>();
         user.put("name", name);
         user.put("email", email);
+        user.put("phone", phone);
         user.put("role", role);
         user.put("wallet", 120.0);
         user.put("createdAt", FieldValue.serverTimestamp());

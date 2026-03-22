@@ -10,8 +10,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Top row: QR / CRUD + Balance -->
-
+        <!-- TOP ROW: QR / Manage / Balance -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -19,35 +18,27 @@
             android:gravity="center_vertical"
             android:layout_marginBottom="16dp">
 
-            <!-- QR scan button -->
             <ImageButton
                 android:id="@+id/btn_qr_scan"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:contentDescription="QR Scan"
                 android:src="@drawable/baseline_qr_code_scanner_24"
                 android:backgroundTint="@color/black"
-                android:scaleType="centerInside"
                 android:background="?attr/selectableItemBackgroundBorderless" />
 
-            <!-- Host manage services -->
             <ImageButton
                 android:id="@+id/btn_manage_services"
                 android:layout_width="28dp"
                 android:layout_height="32dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:backgroundTint="@color/black"
-                android:contentDescription="Manage Services"
-                android:scaleType="centerInside"
                 android:src="@drawable/outline_add_location_alt_24"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:visibility="gone" />
 
-            <!-- Balance Card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
                 android:layout_weight="1"
+                android:layout_marginStart="12dp"
                 android:padding="12dp"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="4dp">
@@ -68,27 +59,24 @@
                         android:id="@+id/text_balance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="RM 120.50"
+                        android:text="RM 0.00"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:layout_marginTop="4dp" />
-
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
-
-        <!-- CATEGORY SECTION -->
-
+        <!-- CATEGORY GRID -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Browse Chargers"
-            android:textSize="16sp"
             android:textStyle="bold"
-            android:layout_marginBottom="12dp" />
+            android:textSize="16sp"
+            android:layout_marginBottom="12dp"/>
 
         <GridLayout
             android:layout_width="match_parent"
@@ -96,7 +84,6 @@
             android:columnCount="4"
             android:layout_marginBottom="16dp">
 
-            <!-- HOME -->
             <LinearLayout
                 android:id="@+id/cat_home"
                 android:layout_width="0dp"
@@ -112,14 +99,13 @@
                     android:src="@drawable/ic_home" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Home"
                     android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
 
-            <!-- MALL -->
             <LinearLayout
                 android:id="@+id/cat_mall"
                 android:layout_width="0dp"
@@ -135,14 +121,13 @@
                     android:src="@drawable/outline_local_mall_24" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Mall"
                     android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
 
-            <!-- AIRBNB -->
             <LinearLayout
                 android:id="@+id/cat_airbnb"
                 android:layout_width="0dp"
@@ -158,14 +143,13 @@
                     android:src="@drawable/airbnb" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Airbnb"
                     android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
 
-            <!-- OFFICE -->
             <LinearLayout
                 android:id="@+id/cat_office"
                 android:layout_width="0dp"
@@ -181,18 +165,16 @@
                     android:src="@drawable/office_building" />
 
                 <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:text="Office"
                     android:textSize="12sp"
-                    android:layout_marginTop="4dp"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"/>
+                    android:layout_marginTop="4dp"/>
             </LinearLayout>
 
         </GridLayout>
 
-
-        <!-- Driver Section -->
-
+        <!-- DRIVER SECTION -->
         <LinearLayout
             android:id="@+id/layout_driver_section"
             android:layout_width="match_parent"
@@ -200,6 +182,7 @@
             android:orientation="vertical"
             android:visibility="visible">
 
+            <!-- Header with title and "View more" -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -228,18 +211,10 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_nearest"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:overScrollMode="never"
-                android:clipToPadding="false"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:scrollbars="horizontal" />
-
+                android:layout_height="wrap_content"/>
         </LinearLayout>
 
-
-        <!-- Host Section: Services + Dashboard -->
-
+        <!-- HOST SECTION -->
         <LinearLayout
             android:id="@+id/layout_host_section"
             android:layout_width="match_parent"
@@ -265,15 +240,15 @@
                 android:clipToPadding="false"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
-                android:scrollbars="horizontal" />
+                android:scrollbars="horizontal"/>
 
-            <!-- Dashboard -->
+            <!-- EARNINGS DASHBOARD -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Dashboard"
-                android:textSize="16sp"
                 android:textStyle="bold"
+                android:textSize="16sp"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="8dp"/>
 
@@ -282,9 +257,9 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:weightSum="3"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="16dp">
 
-                <!-- Week Card -->
+                <!-- Week -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="80dp"
@@ -298,7 +273,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent">
 
-                        <!-- Period Text -->
                         <TextView
                             android:id="@+id/text_week_label"
                             android:layout_width="wrap_content"
@@ -309,7 +283,6 @@
                             android:layout_alignParentTop="true"
                             android:layout_alignParentStart="true"/>
 
-                        <!-- Earning -->
                         <TextView
                             android:id="@+id/text_earning_week"
                             android:layout_width="wrap_content"
@@ -317,12 +290,11 @@
                             android:text="RM 0.00"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:layout_centerInParent="true"
-                            android:textColor="@android:color/black"/>
+                            android:layout_centerInParent="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Month Card -->
+                <!-- Month -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="80dp"
@@ -353,12 +325,11 @@
                             android:text="RM 0.00"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:layout_centerInParent="true"
-                            android:textColor="@android:color/black"/>
+                            android:layout_centerInParent="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Year Card -->
+                <!-- Year -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
                     android:layout_height="80dp"
@@ -388,11 +359,59 @@
                             android:text="RM 0.00"
                             android:textSize="20sp"
                             android:textStyle="bold"
-                            android:layout_centerInParent="true"
-                            android:textColor="@android:color/black"/>
+                            android:layout_centerInParent="true"/>
                     </RelativeLayout>
                 </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
+            <!-- ANALYTICS: Top Chargers + PieChart -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Top Chargers"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_top_chargers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Revenue Breakdown"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:id="@+id/piechart_revenue_breakdown"
+                        android:layout_width="match_parent"
+                        android:layout_height="250dp"/>
+                </LinearLayout>
 
             </LinearLayout>
 

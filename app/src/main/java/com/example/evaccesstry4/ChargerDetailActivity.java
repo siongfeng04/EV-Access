@@ -21,6 +21,7 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ChargerDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -59,6 +60,8 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         distanceText = findViewById(R.id.detail_distance);
         TextView price = findViewById(R.id.detail_price);
         TextView status = findViewById(R.id.detail_status);
+        TextView hostName = findViewById(R.id.detail_host_name);
+        TextView hostPhone = findViewById(R.id.detail_host_phone);
 
         Button btnBook = findViewById(R.id.btn_book);
         TextView backBtn = findViewById(R.id.backBtn);
@@ -85,6 +88,25 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
             status.setText("Status: Not Available");
             status.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
         }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users")
+                .document(chargerHostId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String host_name = documentSnapshot.getString("name");
+                        String phone = documentSnapshot.getString("phone");
+
+                        hostName.setText("Host: " + (host_name != null ? host_name : "N/A"));
+                        hostPhone.setText("Phone: " + (phone != null ? phone : "N/A"));
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    hostName.setText("Host: N/A");
+                    hostPhone.setText("Phone: N/A");
+                });
 
         // Initialize location provider
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
