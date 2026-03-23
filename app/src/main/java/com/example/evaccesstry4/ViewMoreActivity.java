@@ -27,6 +27,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class ViewMoreActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -36,7 +40,7 @@ public class ViewMoreActivity extends AppCompatActivity {
     private List<Charger> filteredList;
 
     private TextInputEditText searchEditText;
-    private Chip chipCheap, chipFast, chipRate;
+    private Chip chipAvailable, chipCheap, chipFast, chipRate;
 
     private FirebaseFirestore db;
     private FusedLocationProviderClient fusedLocationClient;
@@ -73,7 +77,7 @@ public class ViewMoreActivity extends AppCompatActivity {
         chipCheap = findViewById(R.id.chipCheap);
         chipFast = findViewById(R.id.chipFast);
         chipRate = findViewById(R.id.chipRate);
-
+        chipAvailable = findViewById(R.id.chipAvailable);
 
         chargerList = new ArrayList<>();
         filteredList = new ArrayList<>();
@@ -92,6 +96,8 @@ public class ViewMoreActivity extends AppCompatActivity {
         chipCheap.setOnClickListener(v -> applyFilters());
         chipFast.setOnClickListener(v -> applyFilters());
         chipRate.setOnClickListener(v -> applyFilters());
+        chipAvailable.setOnClickListener(v -> applyFilters());
+
 
         backBtn.setOnClickListener(v -> finish());
     }
@@ -129,6 +135,8 @@ public class ViewMoreActivity extends AppCompatActivity {
                                 ("all".equalsIgnoreCase(category) ||
                                         category.equalsIgnoreCase(charger.getCategory()))) {
 
+                            charger.setId(doc.getId());
+
                             // 🔹 Calculate distance from user
                             float[] results = new float[1];
                             Location.distanceBetween(userLat, userLng,
@@ -148,6 +156,8 @@ public class ViewMoreActivity extends AppCompatActivity {
                                 for (Charger charger : chargerList) {
                                     double total = 0;
                                     int count = 0;
+                                    boolean available = true;
+
 
                                     for (DocumentSnapshot bookingDoc : bookingSnapshots) {
                                         String cName = bookingDoc.getString("chargerName");
@@ -157,10 +167,47 @@ public class ViewMoreActivity extends AppCompatActivity {
                                             total += rating;
                                             count++;
                                         }
+
+                                        // Calculate availability
+                                        String cId = bookingDoc.getString("chargerID");
+                                        String status = bookingDoc.getString("status");
+                                        String startStr = bookingDoc.getString("startTime");
+                                        String endStr = bookingDoc.getString("endTime"); // might be null, calculate from duration if missing
+                                        long startTime = 0;
+                                        long endTime = 0;
+
+                                        try {
+                                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                                            if (startStr != null) startTime = sdf.parse(startStr).getTime();
+
+                                            if (endStr != null) {
+                                                endTime = sdf.parse(endStr).getTime();
+                                            } else {
+                                                // fallback: compute endTime from duration
+                                                Long duration = bookingDoc.getLong("duration"); // in hours
+                                                if (duration != null) endTime = startTime + duration * 60 * 60 * 1000;
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                            startTime = 0;
+                                            endTime = 0;
+                                        }
+
+                                        long now = System.currentTimeMillis();
+
+                                        if (cId != null && cId.equals(charger.getId()) &&
+                                                "BOOKED".equalsIgnoreCase(status) &&
+                                                now >= startTime && now <= endTime) {
+                                            available = false;
+                                        }
+
+
                                     }
 
                                     charger.setRating(count > 0 ? total / count : 0);
+                                    charger.setAvailable(available);
                                 }
+
 
                                 applyFilters(); // Apply search/filter and notify adapter
                             })
@@ -178,6 +225,8 @@ public class ViewMoreActivity extends AppCompatActivity {
         boolean filterCheap = chipCheap.isChecked();
         boolean filterFast = chipFast.isChecked();
         boolean filterRate = chipRate.isChecked();
+        boolean filterAvailable = chipAvailable.isChecked();
+
 
 
         filteredList.clear();
@@ -187,6 +236,7 @@ public class ViewMoreActivity extends AppCompatActivity {
             boolean matchesCheap = true;
             boolean matchesFast = true;
             boolean matchesRate = true;
+            boolean matchesAvailable = true;
 
 
             if (filterCheap) {
@@ -200,10 +250,11 @@ public class ViewMoreActivity extends AppCompatActivity {
 
             if (filterFast) matchesFast = charger.isFastCharger();
             if (filterRate) matchesRate = charger.getRating() >= 3.0;
+            if (filterAvailable) matchesAvailable = charger.isAvailable();
 
 
 
-            if (matchesSearch && matchesCheap && matchesFast && matchesRate) filteredList.add(charger);
+            if (matchesSearch && matchesCheap && matchesFast && matchesRate && matchesAvailable) filteredList.add(charger);
         }
 
         // Sort by distance ascending

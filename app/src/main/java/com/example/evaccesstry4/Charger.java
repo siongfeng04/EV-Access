@@ -13,6 +13,8 @@ public class Charger {
     private String category;
     private String hostId;
     private double rating;
+    private boolean available;
+
 
     // distance calculated locally (not from Firestore)
     private double distance = -1;
@@ -32,6 +34,8 @@ public class Charger {
     public String getHostId() { return hostId; }
     public double getDistance() { return distance; }
     public double getRating() { return rating; }
+    public boolean isAvailable() { return available; }
+
 
 
     // Setters
@@ -47,4 +51,5 @@ public class Charger {
     public void setHostId(String hostId) { this.hostId = hostId; }
     public void setDistance(double distance) { this.distance = distance; }
     public void setRating(double rating) { this.rating = rating; }
+    public void setAvailable(boolean available) { this.available = available; }
 }

@@ -11,6 +11,7 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Switch;
@@ -40,6 +41,8 @@ public class ManageServicesActivity extends AppCompatActivity {
     private Button btnUploadImage, btnSaveService, btnSelectLocation;
     private TextView txtSelectedLocation;
 
+
+
     private Uri imageUri;
 
     private double selectedLat = 0;
@@ -67,6 +70,7 @@ public class ManageServicesActivity extends AppCompatActivity {
         imgPreview = findViewById(R.id.img_preview);
         btnUploadImage = findViewById(R.id.btn_upload_image);
         btnSaveService = findViewById(R.id.btn_save_service);
+        ImageButton btnBack = findViewById(R.id.btn_back);
 
         btnSelectLocation = findViewById(R.id.btn_select_location);
         txtSelectedLocation = findViewById(R.id.txt_selected_location);
@@ -82,6 +86,9 @@ public class ManageServicesActivity extends AppCompatActivity {
 
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(adapter);
+
+        btnBack.setOnClickListener(v -> finish());
+
 
         // Upload image
         btnUploadImage.setOnClickListener(v -> checkPermissionAndPickImage());

@@ -344,11 +344,48 @@ public class HomeFragment extends Fragment {
                     List<Charger> hostServices = new ArrayList<>();
                     for (DocumentSnapshot doc : queryDocumentSnapshots) {
                         Charger charger = doc.toObject(Charger.class);
-                        if (charger != null) hostServices.add(charger);
+                        if (charger != null) {
+                            charger.setId(doc.getId()); // ⭐ IMPORTANT
+
+                            double distance = calculateDistance(
+                                    charger.getLat(),
+                                    charger.getLng()
+                            );
+
+                            charger.setDistance(distance); // ⭐ ADD THIS
+
+                            hostServices.add(charger);
+                        }
                     }
 
-                    recyclerHostServices.setAdapter(
-                            new ChargerAdapter(requireContext(), hostServices));
+                    // ⭐ ADD THIS (same as driver logic)
+                    db.collection("bookings")
+                            .get()
+                            .addOnSuccessListener(bookingSnapshots -> {
+
+                                for (Charger charger : hostServices) {
+                                    double total = 0;
+                                    int count = 0;
+
+                                    for (DocumentSnapshot bookingDoc : bookingSnapshots) {
+                                        String cName = bookingDoc.getString("chargerName");
+                                        Double rating = bookingDoc.getDouble("rating");
+
+                                        if (cName != null &&
+                                                cName.equals(charger.getName()) &&
+                                                rating != null) {
+
+                                            total += rating;
+                                            count++;
+                                        }
+                                    }
+
+                                    charger.setRating(count > 0 ? total / count : 0);
+                                }
+
+                                recyclerHostServices.setAdapter(
+                                        new ChargerAdapter(requireContext(), hostServices));
+                            });
                 });
 
         // -------------------
@@ -546,6 +583,14 @@ public class HomeFragment extends Fragment {
                     if (mall > 0) entries.add(new PieEntry((float) mall, "Mall"));
                     if (airbnb > 0) entries.add(new PieEntry((float) airbnb, "Airbnb"));
                     if (office > 0) entries.add(new PieEntry((float) office, "Office"));
+
+                    // ✅ ADD HERE
+                    if (entries.isEmpty()) {
+                        pieChart.clear();
+                        pieChart.setNoDataText("No revenue data");
+                        pieChart.invalidate();
+                        return;
+                    }
 
                     PieDataSet dataSet = new PieDataSet(entries, "");
                     dataSet.setColors(ColorTemplate.MATERIAL_COLORS);

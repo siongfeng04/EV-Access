@@ -40,6 +40,7 @@ public class BookingDialogFragment extends DialogFragment {
     private String priceStr = "";
     private String hostId = "";
     private String chargerID = "";
+    private String chargerCategory = "";
     private double chargerPower = 7.0;
 
 
@@ -47,12 +48,14 @@ public class BookingDialogFragment extends DialogFragment {
     private FirebaseFirestore db;
     private FirebaseAuth auth;
 
-    public BookingDialogFragment(String chargerName, String priceStr, String chargerHostId, String chargerID, double chargerPower) {
+    public BookingDialogFragment(String chargerName, String priceStr, String chargerHostId, String chargerID, double chargerPower, String chargerCategory) {
         this.chargerName = chargerName;
         this.priceStr = priceStr;
         this.hostId = chargerHostId;
         this.chargerID = chargerID;
         this.chargerPower = chargerPower;
+        this.chargerCategory = chargerCategory;
+
 
 
         if (priceStr != null) {
@@ -183,29 +186,77 @@ public class BookingDialogFragment extends DialogFragment {
             return;
         }
 
-        double totalCost = chargerPower * durationHours * chargerPricePerKWh;
-
         Calendar selectedTime = Calendar.getInstance();
-        if (isBookNow) {
-            selectedTime.set(startYear, startMonth, startDay, startHour, startMinute);
-        } else {
-            selectedTime.set(startYear, startMonth, startDay, startHour, startMinute);
-        }
+        selectedTime.set(startYear, startMonth, startDay, startHour, startMinute);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
-        String startTimeStr = sdf.format(selectedTime.getTime());
+        long newStartMillis = selectedTime.getTimeInMillis();
+        long newEndMillis = newStartMillis + (durationHours * 60 * 60 * 1000);
 
         String userId = auth.getCurrentUser().getUid();
 
+        // 🔥 Step 1: Check existing bookings
+        db.collection("bookings")
+                .whereEqualTo("chargerID", chargerID)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                    boolean isConflict = false;
+
+                    for (var doc : queryDocumentSnapshots) {
+                        try {
+                            String existingStartStr = doc.getString("startTime");
+                            int existingDuration = doc.getLong("duration").intValue();
+
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                            Date existingStartDate = sdf.parse(existingStartStr);
+
+                            long existingStartMillis = existingStartDate.getTime();
+                            long existingEndMillis = existingStartMillis + (existingDuration * 60 * 60 * 1000);
+
+                            // 🔥 Overlap check
+                            if (existingStartMillis < newEndMillis &&
+                                    existingEndMillis > newStartMillis) {
+                                isConflict = true;
+                                break;
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (isConflict) {
+                        Toast.makeText(getContext(), "Time slot not available!", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
+                    // ✅ No conflict → proceed booking
+                    saveBooking(newStartMillis, userId);
+
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(getContext(), "Error checking availability", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    private void saveBooking(long startMillis, String userId) {
+
+        double totalCost = chargerPower * durationHours * chargerPricePerKWh;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+        String startTimeStr = sdf.format(new Date(startMillis));
+
         Map<String, Object> booking = new HashMap<>();
         booking.put("chargerName", chargerName);
+        booking.put("category",chargerCategory);
         booking.put("price", priceStr);
         booking.put("duration", durationHours);
-        booking.put("startTime", startTimeStr);
+        booking.put("startTime", startTimeStr); // ✅ still String
         booking.put("estimatedCost", totalCost);
         booking.put("totalCost", totalCost);
         booking.put("userId", userId);
         booking.put("hostId", hostId);
+        booking.put("chargerID", chargerID); // 🔥 IMPORTANT
         booking.put("status", "BOOKED");
         booking.put("timestamp", System.currentTimeMillis());
 
@@ -213,7 +264,6 @@ public class BookingDialogFragment extends DialogFragment {
                 .add(booking)
                 .addOnSuccessListener(docRef -> {
                     Toast.makeText(getContext(), "Booking successful!", Toast.LENGTH_LONG).show();
-
                     dismiss();
                 })
                 .addOnFailureListener(e ->

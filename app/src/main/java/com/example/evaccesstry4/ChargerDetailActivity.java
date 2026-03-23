@@ -27,6 +27,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class ChargerDetailActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String EXTRA_NAME = "extra_name";
@@ -37,6 +41,8 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
     public static final String EXTRA_HOST_ID = "extra_host_id";
     public static final String EXTRA_ID = "extra_id";
     public static final String EXTRA_POWER = "extra_power";
+    public static final String EXTRA_CATEGORY = "extra_category";
+
 
 
 
@@ -53,6 +59,9 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
 
     private String chargerName;
     private String chargerHostId;
+    private String chargerID;
+    private String chargerCategory;
+
 
     private FusedLocationProviderClient fusedLocationClient;
 
@@ -79,7 +88,16 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         chargerName = getIntent().getStringExtra(EXTRA_NAME);
         chargerHostId = getIntent().getStringExtra(EXTRA_HOST_ID);
         String chargerPrice = getIntent().getStringExtra(EXTRA_PRICE);
-        String chargerID = getIntent().getStringExtra(EXTRA_ID);
+        chargerID = getIntent().getStringExtra(EXTRA_ID);
+        chargerCategory = getIntent().getStringExtra(EXTRA_CATEGORY);
+
+
+        if (chargerID == null) {
+            Toast.makeText(this, "Charger ID missing!", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+
         double chargerPower = getIntent().getDoubleExtra(EXTRA_POWER, Double.NaN);
 
         chargerLat = getIntent().getDoubleExtra(EXTRA_LAT, Double.NaN);
@@ -90,13 +108,7 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
         price.setText(chargerPrice != null ? chargerPrice : "Price unavailable");
 
         // Status
-        if (chargerPrice != null) {
-            status.setText("Status: Available");
-            status.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
-        } else {
-            status.setText("Status: Not Available");
-            status.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
-        }
+        checkChargerAvailability(chargerID, status);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -135,7 +147,15 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
 
         backBtn.setOnClickListener(v -> finish());
 
-        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        } else {
+            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        //currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 // Check if current user is host (owner of charger)
         if (currentUserId.equals(chargerHostId)) {
@@ -166,7 +186,8 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
                         getIntent().getStringExtra(EXTRA_PRICE),
                         chargerHostId,
                         getIntent().getStringExtra(EXTRA_ID),
-                        getIntent().getDoubleExtra(EXTRA_POWER, Double.NaN)
+                        getIntent().getDoubleExtra(EXTRA_POWER, Double.NaN),
+                        getIntent().getStringExtra(EXTRA_CATEGORY)
                 );
                 bookingDialog.show(getSupportFragmentManager(), "BookingDialog");
             });
@@ -307,6 +328,11 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
     private void deleteCharger() {
         String chargerId = getIntent().getStringExtra(EXTRA_ID);
 
+        if (chargerId == null) {
+            Toast.makeText(this, "Charger ID missing", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         FirebaseFirestore.getInstance()
                 .collection("services")
                 .document(chargerId)
@@ -316,6 +342,59 @@ public class ChargerDetailActivity extends AppCompatActivity implements OnMapRea
                     finish();
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Delete failed", Toast.LENGTH_SHORT).show());
+    }
+
+    private void checkChargerAvailability(String chargerID, TextView statusText) {
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        long now = System.currentTimeMillis();
+
+        db.collection("bookings")
+                .whereEqualTo("chargerID", chargerID)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+
+                    boolean isBusy = false;
+
+                    for (var doc : queryDocumentSnapshots) {
+                        try {
+                            String startStr = doc.getString("startTime");
+                            int duration = doc.getLong("duration").intValue();
+
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+                            Date startDate = sdf.parse(startStr);
+
+                            long startMillis = startDate.getTime();
+                            long endMillis = startMillis + (duration * 60 * 60 * 1000);
+
+                            // 🔥 Check if NOW is inside booking
+                            if (now >= startMillis && now <= endMillis) {
+                                isBusy = true;
+                                break;
+                            }
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (isBusy) {
+                        statusText.setText("Status: Not Available");
+                        statusText.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+
+                        // 🔥 Disable booking button
+                        //findViewById(R.id.btn_book).setEnabled(false);
+
+                    } else {
+                        statusText.setText("Status: Available");
+                        statusText.setTextColor(getResources().getColor(android.R.color.holo_green_dark));
+                    }
+
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Failed to check availability", Toast.LENGTH_SHORT).show()
+                );
     }
 
 }

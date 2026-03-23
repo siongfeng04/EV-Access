@@ -58,19 +58,6 @@ public class HostServiceAdapter extends RecyclerView.Adapter<HostServiceAdapter.
             holder.distance.setText("N/A");
         }
 
-        // Edit button
-        holder.btnEdit.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onEdit(service);
-            }
-        });
-
-        // Delete button
-        holder.btnDelete.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onDelete(service);
-            }
-        });
     }
 
     @Override

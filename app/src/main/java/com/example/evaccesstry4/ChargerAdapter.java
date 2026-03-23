@@ -83,6 +83,8 @@ public class ChargerAdapter extends RecyclerView.Adapter<ChargerAdapter.VH> {
             i.putExtra("extra_host_id", c.getHostId());
             i.putExtra("extra_id", c.getId());
             i.putExtra("extra_power", c.getChargerPower());
+            i.putExtra("extra_category", c.getCategory());
+
 
 
             context.startActivity(i);
